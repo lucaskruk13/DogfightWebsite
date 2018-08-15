@@ -28,21 +28,26 @@ class SuccessfulSignupUpTests(TestCase):
         url = reverse('signup')
         data = {
             'username':'john',
-            'password': 'abcdef123456',
+            'email':'john@appleseed.com',
+            'first_name':'john',
+            'last_name':'appleseed',
+            'password1': 'abcdef123456',
             'password2': 'abcdef123456',
         }
 
         self.response = self.client.post(url, data)
-        self.feed_url = reverse('feed')
+        print (self.response)
+        self.my_account_url = reverse('my_account')
 
     def test_redirection(self):
         '''
         A valid form submission should redirect the user to the feed page
         '''
 
-        self.assertRedirects(self.response, self.feed_url)
+        self.assertRedirects(self.response, self.my_account_url)
 
     def test_user_creation(self):
+
         self.assertTrue(User.objects.exists())
 
     def test_user_authenticaion(self):
@@ -51,7 +56,9 @@ class SuccessfulSignupUpTests(TestCase):
         The resulting response should now have a 'user' to it's context, after a successful signup
         '''
 
-        response = self.client.get(self.feed_url)
+
+
+        response = self.client.get(self.my_account_url)
         user = response.context.get('user')
         self.assertTrue(user.is_authenticated)
 

@@ -44,7 +44,7 @@ urlpatterns = [
     name='password_reset'),
 
     # Settings
-    path('settings/account/', account_views.UserUpdateView.as_view(), name='my_account'),
+    path('settings/account/', account_views.ProfileUpdateView.as_view(), name='my_account'),
     path('settings/password/', auth_views.PasswordChangeView.as_view(template_name='accounts/auth/password_change.html'), name='password_change'),
     path('settings/password/done/', auth_views.PasswordChangeDoneView.as_view(template_name='accounts/auth/password_change_done.html'),name='password_change_done'),
 ]
