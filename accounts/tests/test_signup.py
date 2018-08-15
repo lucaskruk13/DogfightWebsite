@@ -3,7 +3,7 @@ from django.urls import reverse, resolve
 from accounts.views import signup
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-
+from accounts.models import Profile
 # Create your tests here.
 class SignupTests(TestCase):
     def setUp(self):
@@ -33,11 +33,24 @@ class SuccessfulSignupUpTests(TestCase):
             'last_name':'appleseed',
             'password1': 'abcdef123456',
             'password2': 'abcdef123456',
+
+        }
+
+
+        data2 = {
+            'bio': 'Its Me!',
+            'handicap': 5,
         }
 
         self.response = self.client.post(url, data)
-        print (self.response)
         self.my_account_url = reverse('my_account')
+
+        self.account_response = self.client.get(self.my_account_url)
+
+        self.response2_url = self.client.post(self.my_account_url, data2)
+        self.feed_response = self.client.get(reverse('feed'))
+
+
 
     def test_redirection(self):
         '''
@@ -49,6 +62,11 @@ class SuccessfulSignupUpTests(TestCase):
     def test_user_creation(self):
 
         self.assertTrue(User.objects.exists())
+        user = User.objects.first()
+
+
+        self.assertTrue(Profile.objects.exists()) # Profile should be created
+
 
     def test_user_authenticaion(self):
         '''
@@ -56,11 +74,16 @@ class SuccessfulSignupUpTests(TestCase):
         The resulting response should now have a 'user' to it's context, after a successful signup
         '''
 
-
-
         response = self.client.get(self.my_account_url)
-        user = response.context.get('user')
-        self.assertTrue(user.is_authenticated)
+        self.user = response.context.get('user')
+        self.assertTrue(self.user.is_authenticated)
+
+    def test_profile_signup(self):
+        user = self.feed_response.context.get('user')
+
+        self.assertEquals('Its Me!', user.profile.bio)
+        self.assertEquals(5.0, user.profile.handicap)
+
 
 
 class InvalidSignUpTests(TestCase):
