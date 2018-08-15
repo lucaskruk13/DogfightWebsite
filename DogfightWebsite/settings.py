@@ -127,3 +127,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 ROOT_URLCONF = 'DogfightWebsite.urls'
+LOGOUT_REDIRECT_URL = 'feed'
+LOGIN_REDIRECT_URL = 'feed'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+LOGIN_URL = 'login'
