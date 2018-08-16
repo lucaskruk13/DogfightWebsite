@@ -3,18 +3,26 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.db.models import Avg
-from decimal import Decimal
+from django.core.validators import RegexValidator
+import re
+
 # Create your models here.
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     bio = models.TextField(max_length=500, blank=True)
     location = models.CharField(max_length=30, blank=True)
     birth_date = models.DateField(null=True, blank=True)
-    handicap = models.FloatField(null=False, blank=False,default=0)
+    handicap = models.CharField(max_length=6, null=False, blank=False,default=0, validators=[
+        RegexValidator(
+            regex="^[+]?\d*\.?\d*$",
+            message="Invalid Handicap",
+            code='invalid_handicap'
+        )
+    ])
     initial = models.BooleanField(default=True) # Initial Value to update the handicap
 
 
-    # TODO: write Average & Quota Building Tests
+    # TODO: write Average & Quota Building Tests Including Failing conditions
     def getCurrentQuota(self):
         avg = Scores.objects.filter(profile=self).order_by('-created_at')[:5].aggregate(Avg('score'))
         if avg['score__avg']:
@@ -60,9 +68,12 @@ def save_user_profile(sender, instance, **kwargs):
 
 
 def generateInitialQuota(handicap):
-    # TODO: account for + quotas
 
-    return round(36.0 - float(handicap))
+    # when we get here, the handicap should be valid
+    # if the handicap is + we need to convert it to - to add to 36
+    handicap = float(re.sub(r"[+]", "-", handicap))
+
+    return round(36.0 - handicap)
 
 
 

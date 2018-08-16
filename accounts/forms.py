@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import Profile
-from decimal import Decimal
+from django.core.validators import RegexValidator
 
 
 class SignUpForm(UserCreationForm):
@@ -15,7 +15,14 @@ class SignUpForm(UserCreationForm):
         fields = ('username', 'email','first_name','last_name', 'password1', 'password2')
 
 class ProfileForm(forms.ModelForm):
-    handicap = forms.DecimalField(max_value=15.0, min_value=-4.0)
+    handicap = forms.CharField(max_length=6, required=True, validators=[
+        RegexValidator(
+            regex="^[+]?\d*\.?\d*$",
+            message="Invalid Handicap",
+            code='invalid_handicap'
+        )
+    ])
+
     bio = forms.CharField(
         widget=forms.Textarea(
             attrs={'rows':5, 'placeholder':'Tell others about you'}
