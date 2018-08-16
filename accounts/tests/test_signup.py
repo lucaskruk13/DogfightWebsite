@@ -4,6 +4,7 @@ from accounts.views import signup
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from accounts.models import Profile
+
 # Create your tests here.
 class SignupTests(TestCase):
     def setUp(self):
@@ -68,6 +69,7 @@ class SuccessfulSignupUpTests(TestCase):
         self.assertTrue(Profile.objects.exists()) # Profile should be created
 
 
+
     def test_user_authenticaion(self):
         '''
         Create a new request to an arbitrary page.
@@ -84,7 +86,49 @@ class SuccessfulSignupUpTests(TestCase):
         self.assertEquals('Its Me!', user.profile.bio)
         self.assertEquals(5.0, user.profile.handicap)
 
+class ProfileCreation(TestCase):
+    def setUp(self):
+        url = reverse('signup')
 
+        data = {
+            'username': 'john',
+            'email': 'john@appleseed.com',
+            'first_name': 'john',
+            'last_name': 'appleseed',
+            'password1': 'abcdef123456',
+            'password2': 'abcdef123456',
+
+        }
+
+        self.response = self.client.post(url, data)
+
+    def test_profile_initial_value(self):
+        # A profile should exist
+        self.assertTrue(Profile.objects.exists())
+
+        # The Profile should have a Initial Value, with a zero handicap
+        profile = Profile.objects.first()
+        self.assertTrue(profile.initial)
+        self.assertEquals(profile.handicap, 0)
+
+    def test_profile_update(self):
+        account_url = reverse('my_account')
+
+        data = {
+            'handicap': 1.4,
+            'bio': 'Its Me!',
+        }
+
+        proile_response = self.client.post(account_url, data)
+
+        profile = Profile.objects.first() # Should be updated
+
+        self.assertEquals(1.4, profile.handicap) # ensure profile handicap is updated
+        self.assertRedirects(proile_response, reverse('feed')) # Should redirect to Feed
+
+# TODO: test invalid haidicap setup, example - Superuser doesnt initially have a handicap
+
+# TODO: test quota is successfully created
 
 class InvalidSignUpTests(TestCase):
     def setUp(self):

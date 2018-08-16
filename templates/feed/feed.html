@@ -7,4 +7,12 @@
 
 {% block content %}
     <p>Feed View</p>
+
+
+    {% if user.profile.initial %}
+        <p style="color: red">No Handicap Entered</p>
+    {% else %}
+        <p>Current Quota: {{ user.profile.getCurrentQuota }}</p>
+    {% endif %}
+
 {% endblock content %}

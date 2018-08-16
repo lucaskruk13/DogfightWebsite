@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login as auth_login
-from .forms import SignUpForm
+from .forms import SignUpForm, ProfileForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import UpdateView
-from .models import Profile
+from .models import Profile, Scores
 
 @method_decorator(login_required, name='dispatch')
 class ProfileUpdateView(UpdateView):
@@ -15,8 +15,19 @@ class ProfileUpdateView(UpdateView):
     template_name = 'accounts/my_account.html'
     success_url = reverse_lazy('feed')
 
+
     def get_object(self, queryset=None):
         return self.request.user.profile
+
+    def form_valid(self, form):
+        profile = self.request.user.profile
+
+        if profile.initial:
+            profile.initial = False
+            profile.save()
+            return redirect('feed')
+
+
 
 # @method_decorator(login_required, name='dispatch')
 # class UserUpdateView(UpdateView):

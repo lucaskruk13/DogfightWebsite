@@ -15,14 +15,14 @@
                 <a href="{% url 'my_account' %}" class="dropdown-item">My account</a>
                 <a href="#" class="dropdown-item">Change password</a>
                 <div class="dropdown-divider"></div>
-                <a href="#"  class="dropdown-item">Log out</a>
+                <a href="{% url 'logout' %}"  class="dropdown-item">Log out</a>
             </div>
           </li>
         </ul>
         {% else %}
             <form action="" class="form-inline ml-auto">
-                <a href="#" class="btn btn-outline-secondary">Log in</a>
-                <a href="#" class="btn btn-primary ml-2">Sign Up</a>
+                <a href="{% url 'login' %}" class="btn btn-outline-secondary">Log in</a>
+                <a href="{% url 'signup' %}" class="btn btn-primary ml-2">Sign Up</a>
             </form>
         {% endif %}
       </div>
