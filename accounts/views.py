@@ -11,9 +11,10 @@ from .models import Profile, Scores
 @method_decorator(login_required, name='dispatch')
 class ProfileUpdateView(UpdateView):
     model = Profile
-    fields = ['handicap', 'bio']
+    #fields = ['handicap', 'bio']
     template_name = 'accounts/my_account.html'
     success_url = reverse_lazy('feed')
+    form_class = ProfileForm
 
 
     def get_object(self, queryset=None):
@@ -22,10 +23,11 @@ class ProfileUpdateView(UpdateView):
     def form_valid(self, form):
         profile = self.request.user.profile
 
-        if profile.initial:
+        if profile.initial: # to change from initial run after the handicap has been updated
             profile.initial = False
-            profile.save()
-            return redirect('feed')
+
+        profile.save()
+        return super().form_valid(form)
 
 
 
