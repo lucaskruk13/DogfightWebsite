@@ -18,11 +18,13 @@ from django.urls import path
 from feed import views as feed_views
 from accounts import views as account_views
 from django.contrib.auth import views as auth_views
+from feed import views as course_views
 
 urlpatterns = [
 
     # Feed Urls
     path('', feed_views.FeedView.as_view(), name='feed'),
+    path('course/<int:pk>', feed_views.CourseView.as_view(), name='course'),
 
     # Admin Urls
     path('admin/', admin.site.urls),

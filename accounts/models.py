@@ -4,6 +4,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.db.models import Avg
 from django.core.validators import RegexValidator
+from feed.models import Course
 import re
 
 # Create your models here.
@@ -22,6 +23,7 @@ class Profile(models.Model):
     initial = models.BooleanField(default=True) # Initial Value to update the handicap
 
 
+
     # TODO: write Average & Quota Building Tests Including Failing conditions
     def getCurrentQuota(self):
         avg = Scores.objects.filter(profile=self).order_by('-created_at')[:5].aggregate(Avg('score'))
@@ -33,8 +35,8 @@ class Profile(models.Model):
 
 
 class Scores(models.Model):
-    profile = models.ForeignKey(Profile, related_name='scores', on_delete=models.CASCADE)
-    # TODO: Add Course Foreign Key
+    profile = models.ForeignKey(Profile, related_name='scores', on_delete=models.CASCADE) # Every Score has a profile
+    course = models.ForeignKey(Course, related_name='course', on_delete=models.CASCADE, default=1) # Every Score has a course
 
     score = models.IntegerField(default=0, null=False, blank=False)
     created_at = models.DateField(auto_now_add=True)
