@@ -22,9 +22,6 @@ class Profile(models.Model):
     ])
     initial = models.BooleanField(default=True) # Initial Value to update the handicap
 
-
-
-    # TODO: write Average & Quota Building Tests Including Failing conditions
     def getCurrentQuota(self):
         avg = Scores.objects.filter(profile=self).order_by('-created_at')[:5].aggregate(Avg('score'))
         if avg['score__avg']:
@@ -54,6 +51,7 @@ def on_profile_save(sender, instance, **kwargs):
             score = Scores()
             score.profile = instance # Instance is of class Profile
             score.score = generateInitialQuota(instance.handicap)
+            score.course = Course.objects.first()
             score.save()
 
 

@@ -1,0 +1,38 @@
+[
+{
+    "model": "feed.course",
+    "pk": 1,
+    "fields": {
+        "name": "The Oaks",
+        "description": "The Oaks course, at 7,044 yards from the back tees, offers a test for golfers of all skill levels. It's towering oak trees frame the fairways, along with large undulating greens that average more than 4,500 square feet of surface area, huge greenside bunkers, and generous fairways. The par-4, 18th hole that borders Lake Harrison adds to the natural beauty and challenge of the Oaks course. Originally designed by Joe Lee and Robert von Hagge in 1975, the Oaks course was redesigned by Jay Morrish & Associates in 1999. Jay Morrish is known as a studious and intelligent designer, having studied under Robert Trent Jones, Sr. and George Fazio. After spending 10 years working with Jack Nicklaus at Nicklaus Design, Morrish left in 1983 and partnered with former PGA Tour Player Tom Weiskopf. Morrish was named \u201cArchitect of the Year\u201d by Golf World magazine in 1996 and continues to design championship courses with his son Carter.",
+        "location": "The Woodlands, Tx",
+        "par": 72,
+        "yardage": "| Black: 7,044 | Gold: 6,628 | Blue: 6,127 |",
+        "img": "img/the_oaks.jpg"
+    }
+},
+{
+    "model": "feed.course",
+    "pk": 2,
+    "fields": {
+        "name": "Panther Trail",
+        "description": "The Panther course features a 7,044-yard par-72 course with all the ingredients for a demanding and scenic round of golf: deep woods and exceptional Bermuda fairways and greens. It delivers a sleek course, new contours, and fairways framed with more than 20 acres of Texas wildflowers. The course is highlighted by an 18th hole that received the title as the \u201cBest Par 4 in Houston.\u201d Additionally, Panther was recently ranked one of the Top 5 courses to play in the Houston area. Originally designed by Joe Lee & Robert von Hagge, the Panther course was completely renovated in 2002 by Roy Case, design consultant for the Arnold Palmer Management Company since 1997. His courses are known for their physical beauty, visual interest, and quality of play.",
+        "location": "The Woodlands, Tx",
+        "par": 72,
+        "yardage": "| Black: 7,044 | Gold: 6,066 | Blue: 6,201 |",
+        "img": "img/panther.jpg"
+    }
+},
+{
+    "model": "feed.course",
+    "pk": 3,
+    "fields": {
+        "name": "Lake Windcrest",
+        "description": "Lake Windcrest features a 7,040-yard, par-72 golf course with generous fairways that wind through dense vegetation and end with beautiful, well-kept Tif-Eagle greens. Located just outside of The Woodlands in Magnolia, each of the 18 holes offers a different challenge, providing a superb experience even for a golfer who plays the course daily.",
+        "location": "Magnolia, Tx",
+        "par": 72,
+        "yardage": "| Black: 7,040 | Gold: 6,574 | Blue: 6,075 |",
+        "img": "img/lake_windcrest.jpg"
+    }
+}
+]

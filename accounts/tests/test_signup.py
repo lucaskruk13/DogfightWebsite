@@ -3,11 +3,15 @@ from django.urls import reverse, resolve
 from accounts.views import signup
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from accounts.models import Profile
+from accounts.models import Profile, Scores
 from accounts.forms import ProfileForm
+from feed.models import Course
+
 
 # Create your tests here.
+
 class SignupTests(TestCase):
+
     def setUp(self):
         self.response = self.client.get(reverse('signup'))
 
@@ -38,6 +42,7 @@ class SuccessfulSignupUpTests(TestCase):
 
         }
 
+        Course.objects.create(name="The Oaks", location="The Woodlands, Tx", par=72)
 
         data2 = {
             'bio': 'Its Me!',
@@ -101,6 +106,7 @@ class ProfileCreation(TestCase):
 
         }
 
+        Course.objects.create(name="The Oaks", location="The Woodlands, Tx", par=72)
 
         self.response = self.client.post(url, data)
 
@@ -129,10 +135,6 @@ class ProfileCreation(TestCase):
         self.assertEquals(1.4, float(profile.handicap)) # ensure profile handicap is updated
         self.assertRedirects(proile_response, reverse('feed')) # Should redirect to Feed
 
-# TODO: test invalid haidicap setup, example - Superuser doesnt initially have a handicap
-
-# TODO: test quota is successfully created
-
 class InvalidSignUpTests(TestCase):
     def setUp(self):
         url = reverse('signup')
@@ -151,7 +153,7 @@ class InvalidSignUpTests(TestCase):
     def test_dont_create_user(self):
         self.assertFalse(User.objects.exists())
 
-class InvalidProfileSignup(TestCase):
+class InvalidProfileSignupBadHandicapNumber(TestCase):
 
     def setUp(self):
         url = reverse('signup')
@@ -194,3 +196,141 @@ class InvalidProfileSignup(TestCase):
     def test_form_errors_invalid_handicap(self):
         form = self.account_post.context.get('form')
         self.assertTrue(form.errors)
+
+
+
+
+class InvalidProfileSetupNegativeHandicapNumber(TestCase):
+
+    def setUp(self):
+        # Setup Data for the whole test case
+
+        url = reverse('signup')
+
+        self.data = {
+            'username': 'john',
+            'email': 'john@appleseed.com',
+            'first_name': 'john',
+            'last_name': 'appleseed',
+            'password1': 'abcdef123456',
+            'password2': 'abcdef123456',
+
+        }
+
+        self.profile_data = {
+            'handicap': '-2.5',
+            'bio': 'its me',
+        }
+
+        self.response = self.client.post(url, self.data)  # Have to go through signup url to create a one to one profile
+
+
+        # post an invalid form
+        self.account_post = self.client.post(reverse('my_account'), self.profile_data)
+        self.account_response = self.client.get(reverse('my_account'))
+
+    def test_account_status_code(self):
+        self.assertEquals(self.account_post.status_code, 200)
+
+    def test_csrf(self):
+        self.assertContains(self.account_response, 'csrfmiddlewaretoken')
+
+    def test_contains_form(self):
+        form = self.account_response.context.get('form')
+        self.assertIsInstance(form, ProfileForm)
+
+    def test_form_errors_invaild_negative_handicap(self):
+        form = self.account_post.context.get('form')
+        self.assertTrue(form.errors)
+
+
+
+class ValidProfileSetupPlusHandicapNumber(TestCase):
+
+    fixtures = ['fixture_feed_course']
+
+    def setUp(self):
+        url = reverse('signup')
+
+        self.data = {
+            'username': 'john',
+            'email': 'john@appleseed.com',
+            'first_name': 'john',
+            'last_name': 'appleseed',
+            'password1': 'abcdef123456',
+            'password2': 'abcdef123456',
+
+        }
+
+        self.profile_data = {
+            'handicap': '+2.6',
+            'bio': 'its me',
+        }
+
+        self.response = self.client.post(url, self.data)  # Have to go through signup url to create a one to one profile
+
+        # post an invalid form
+        self.account_post = self.client.post(reverse('my_account'), self.profile_data)
+        self.account_response = self.client.get(reverse('my_account'))
+
+    def test_account_status_code(self):
+        self.assertEquals(self.account_post.status_code, 302) # Should Redirect to Feed
+
+    def test_csrf(self):
+        self.assertContains(self.account_response, 'csrfmiddlewaretoken')
+
+    def test_contains_form(self):
+        form = self.account_response.context.get('form')
+        self.assertIsInstance(form, ProfileForm)
+
+    def test_scores_were_created(self):
+        self.assertTrue(Scores.objects.exists()) # Scores should be created
+        self.assertEquals(Scores.objects.all().count(), 5) # Five total scores should be created
+
+        score = Scores.objects.first()
+        self.assertEquals(score.score, 39)
+
+class ValidProfileSetupNormalHandicapNumber(TestCase):
+
+    fixtures = ['fixture_feed_course']
+
+    def setUp(self):
+        url = reverse('signup')
+
+        self.data = {
+            'username': 'john',
+            'email': 'john@appleseed.com',
+            'first_name': 'john',
+            'last_name': 'appleseed',
+            'password1': 'abcdef123456',
+            'password2': 'abcdef123456',
+
+        }
+
+        self.profile_data = {
+            'handicap': '1',
+            'bio': 'its me',
+        }
+
+        self.response = self.client.post(url, self.data)  # Have to go through signup url to create a one to one profile
+
+        # post an invalid form
+        self.account_post = self.client.post(reverse('my_account'), self.profile_data)
+        self.account_response = self.client.get(reverse('my_account'))
+
+    def test_account_status_code(self):
+        self.assertEquals(self.account_post.status_code, 302) # Should Redirect to Feed
+
+    def test_csrf(self):
+        self.assertContains(self.account_response, 'csrfmiddlewaretoken')
+
+    def test_contains_form(self):
+        form = self.account_response.context.get('form')
+        self.assertIsInstance(form, ProfileForm)
+
+    def test_scores_were_created(self):
+        self.assertTrue(Scores.objects.exists()) # Scores should be created
+        self.assertEquals(Scores.objects.all().count(), 5) # Five total scores should be created
+
+        score = Scores.objects.first()
+        self.assertEquals(score.score, 35) # Test quota was created successfully
