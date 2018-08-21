@@ -23,5 +23,4 @@ class CourseView(DetailView):
     context_object_name = 'course'
     template_name = 'feed/course.html'
 
-    # TODO: Write Tests for Course Views
 
