@@ -5,8 +5,6 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from accounts.models import Profile, Scores
 from accounts.forms import ProfileForm
-from feed.models import Course
-
 
 # Create your tests here.
 
