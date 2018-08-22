@@ -22,8 +22,9 @@ class FeedTests(TestCase):
         view = resolve('/')
         self.assertEquals(view.func.view_class, FeedView)
 
-    def test_feed_has_courses(self):
-        self.assertContains(self.response, 'class="card"', 3)
+    # Removed from homepage for now
+    # def test_feed_has_courses(self):
+    #     self.assertContains(self.response, 'class="card"', 3)
 
 
 class CourseViewTests(TestCase):

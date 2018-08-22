@@ -33,7 +33,7 @@ class Profile(models.Model):
 
 class Scores(models.Model):
     profile = models.ForeignKey(Profile, related_name='scores', on_delete=models.CASCADE) # Every Score has a profile
-    course = models.ForeignKey(Course, related_name='course', on_delete=models.CASCADE, default=1) # Every Score has a course
+    course = models.ForeignKey(Course, related_name='scores_course', on_delete=models.CASCADE, default=1) # Every Score has a course
 
     score = models.IntegerField(default=0, null=False, blank=False)
     created_at = models.DateField(auto_now_add=True)

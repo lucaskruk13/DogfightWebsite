@@ -7,24 +7,12 @@
 
 {% block content %}
 
- <div class="container">
-  <div class="card-deck mt-5">
+<div class="parallax-window" data-parallax="scroll" data-image-src="{% static dogfight.course.img %}"></div>
 
-   {% for course in course_list %}
-
-            <div class="card">
-                <a href="{% url 'course' course.pk %}">
-                {% if course.img %}
-                    <img src="{% static course.img %}" alt="The Oaks" class="card-img-top">
-
-                {% endif %}
-                <div class="card-body">{{ course.name }}</div>
-                </a>
-
-            </div>
-
-    {% endfor %}
-  </div>
+<div class="container-fluid" style="border: 1px solid black; height: 500px">
+    <div class="container text-center">
+        <h1>{{ dogfight.formal_text|safe }}</h1>
+    </div>
 </div>
 
 
@@ -37,3 +25,7 @@
 
 
 {% endblock content %}
+
+{% block additional_javascript %}
+<script src="{% static 'js/parallax.js-1.5.0/parallax.js' %}"></script>
+{% endblock additional_javascript %}
