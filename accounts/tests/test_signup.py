@@ -10,29 +10,53 @@ from feed.models import Course
 
 # Create your tests here.
 
-class SignupTests(TestCase):
+class ProfileTest(TestCase):
+    fixtures = ['fixture_feed_course']
+
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.url = reverse('signup')
+        cls.my_account_url = reverse('my_account')
+
+        cls.data = {
+            'username': 'john',
+            'email': 'john@appleseed.com',
+            'first_name': 'john',
+            'last_name': 'appleseed',
+            'password1': 'abcdef123456',
+            'password2': 'abcdef123456',
+
+        }
+
+        cls.profile_data = {
+            'handicap': '1',
+            'bio': 'its me',
+        }
 
     def setUp(self):
-        self.response = self.client.get(reverse('signup'))
+        self.response = self.client.post(self.url, self.data)
 
-    def test_signup_status_code(self):
-        self.assertEquals(self.response.status_code, 200)
+        # post an invalid form
+        self.account_post = self.client.post(reverse('my_account'), self.profile_data)
+        self.account_response = self.client.get(reverse('my_account'))
 
-    def test_signup_resolves_signup_view(self):
-        view = resolve('/signup/')
-        self.assertEquals(view.func, signup)
+class SignUpTest(TestCase):
+    fixtures = ['fixture_feed_course']
 
-    def test_csrf(self):
-        self.assertContains(self.response, 'csrfmiddlewaretoken')
+    @classmethod
+    def setUpClass(cls):
+        super(SignUpTest, cls).setUpClass() # Have the superclass setup
 
-    def test_contains_form(self):
-        form = self.response.context.get('form')
-        self.assertIsInstance(form, UserCreationForm)
+        # Class Level URLs
+        cls.signup_url = reverse('signup')
+        cls.my_account_url = reverse('my_account')
+        cls.feed_url = reverse('feed')
 
-class SuccessfulSignupUpTests(TestCase):
-    def setUp(self):
-        url = reverse('signup')
-        data = {
+        cls.signupView = resolve('/signup/')
+
+
+        cls.signupData = {
             'username':'john',
             'email':'john@appleseed.com',
             'first_name':'john',
@@ -42,295 +66,159 @@ class SuccessfulSignupUpTests(TestCase):
 
         }
 
-        Course.objects.create(name="The Oaks", location="The Woodlands, Tx", par=72)
-
-        data2 = {
+        cls.profileData = {
+            'handicap': '1',
             'bio': 'Its Me!',
-            'handicap': 5,
         }
 
-        self.response = self.client.post(url, data)
-        self.my_account_url = reverse('my_account')
 
-        self.account_response = self.client.get(self.my_account_url)
+    def setUp(self):
+        self.signupResponse = self.client.get(self.signup_url)
+        self.signupPost = self.client.post(self.signup_url, self.signupData)
 
-        self.response2_url = self.client.post(self.my_account_url, data2)
-        self.feed_response = self.client.get(reverse('feed'))
+        self.profileResponse = self.client.get(self.my_account_url)
+        self.profilePost = self.client.post(self.my_account_url, self.profileData)
+
+        self.feedResponse = self.client.get(self.feed_url)
 
 
+class SignupPageSuccessfulTests(SignUpTest):
+
+    def test_status_code(self):
+        self.assertEquals(self.signupResponse.status_code, 200)
+
+    def test_signup_resolves_signup_view(self):
+        self.assertEquals(self.signupView.func, signup)
+
+    def test_csrf(self):
+        self.assertContains(self.signupResponse, 'csrfmiddlewaretoken')
+
+    def test_contains_form(self):
+        form = self.signupResponse.context.get('form')
+        self.assertIsInstance(form, UserCreationForm)
 
     def test_redirection(self):
-        '''
-        A valid form submission should redirect the user to the feed page
-        '''
 
-        self.assertRedirects(self.response, self.my_account_url)
+        # A Valid submission from the signup page will redirect to the account page
+        # A Valid submission from the profile page will redirect to the feed
+
+        self.assertRedirects(self.signupPost, self.my_account_url)
+        self.assertRedirects(self.profilePost, self.feed_url)
 
     def test_user_creation(self):
-
         self.assertTrue(User.objects.exists())
+
+    def test_profile_updated(self):
         user = User.objects.first()
+        profile = Profile.objects.get(user=user)
 
-
-        self.assertTrue(Profile.objects.exists()) # Profile should be created
-
-
-
-    def test_user_authenticaion(self):
-        '''
-        Create a new request to an arbitrary page.
-        The resulting response should now have a 'user' to it's context, after a successful signup
-        '''
-
-        response = self.client.get(self.my_account_url)
-        self.user = response.context.get('user')
-        self.assertTrue(self.user.is_authenticated)
-
-    def test_profile_signup(self):
-        user = self.feed_response.context.get('user')
-
-        self.assertEquals('Its Me!', user.profile.bio)
-        self.assertEquals(5.0, float(user.profile.handicap))
-
-class ProfileCreation(TestCase):
-    def setUp(self):
-        url = reverse('signup')
-
-        data = {
-            'username': 'john',
-            'email': 'john@appleseed.com',
-            'first_name': 'john',
-            'last_name': 'appleseed',
-            'password1': 'abcdef123456',
-            'password2': 'abcdef123456',
-
-        }
-
-        Course.objects.create(name="The Oaks", location="The Woodlands, Tx", par=72)
-
-        self.response = self.client.post(url, data)
-
-
-    def test_profile_initial_value(self):
-        # A profile should exist
-        self.assertTrue(Profile.objects.exists())
-
-        # The Profile should have a Initial Value, with a zero handicap
-        profile = Profile.objects.first()
-        self.assertTrue(profile.initial)
-        self.assertEquals(float(profile.handicap), 0)
-
-    def test_profile_update(self):
-        account_url = reverse('my_account')
-
-        data = {
-            'handicap': 1.4,
-            'bio': 'Its Me!',
-        }
-
-        proile_response = self.client.post(account_url, data)
-
-        profile = Profile.objects.first() # Should be updated
-
-        self.assertEquals(1.4, float(profile.handicap)) # ensure profile handicap is updated
-        self.assertRedirects(proile_response, reverse('feed')) # Should redirect to Feed
-
-class InvalidSignUpTests(TestCase):
-    def setUp(self):
-        url = reverse('signup')
-        self.response = self.client.post(url, {})  # submit an empty dictionary
-
-    def test_signup_status_code(self):
-        '''
-        An invalid form submission should return to the same page
-        '''
-        self.assertEquals(self.response.status_code, 200)
-
-    def test_form_errors(self):
-        form = self.response.context.get('form')
-        self.assertTrue(form.errors)
-
-    def test_dont_create_user(self):
-        self.assertFalse(User.objects.exists())
-
-class InvalidProfileSignupBadHandicapNumber(TestCase):
-
-    def setUp(self):
-        url = reverse('signup')
-
-        data = {
-            'username': 'john',
-            'email': 'john@appleseed.com',
-            'first_name': 'john',
-            'last_name': 'appleseed',
-            'password1': 'abcdef123456',
-            'password2': 'abcdef123456',
-
-        }
-
-        self.response = self.client.post(url, data)
-
-
-        data = {
-            'handicap': '2..5',
-            'bio': 'its me',
-        }
-
-        # post an invalid form
-        self.account_post = self.client.post(reverse('my_account'), data)
-        self.account_response = self.client.get(reverse('my_account'))
-
-
-    def test_account_status_code(self):
-
-        self.assertEquals(self.account_post.status_code, 200)
-
-
-    def test_csrf(self):
-        self.assertContains(self.account_response, 'csrfmiddlewaretoken')
-
-    def test_contains_form(self):
-        form = self.account_response.context.get('form')
-        self.assertIsInstance(form, ProfileForm)
-
-    def test_form_errors_invalid_handicap(self):
-        form = self.account_post.context.get('form')
-        self.assertTrue(form.errors)
-
-
-
-
-class InvalidProfileSetupNegativeHandicapNumber(TestCase):
-
-    def setUp(self):
-        # Setup Data for the whole test case
-
-        url = reverse('signup')
-
-        self.data = {
-            'username': 'john',
-            'email': 'john@appleseed.com',
-            'first_name': 'john',
-            'last_name': 'appleseed',
-            'password1': 'abcdef123456',
-            'password2': 'abcdef123456',
-
-        }
-
-        self.profile_data = {
-            'handicap': '-2.5',
-            'bio': 'its me',
-        }
-
-        self.response = self.client.post(url, self.data)  # Have to go through signup url to create a one to one profile
-
-
-        # post an invalid form
-        self.account_post = self.client.post(reverse('my_account'), self.profile_data)
-        self.account_response = self.client.get(reverse('my_account'))
-
-    def test_account_status_code(self):
-        self.assertEquals(self.account_post.status_code, 200)
-
-    def test_csrf(self):
-        self.assertContains(self.account_response, 'csrfmiddlewaretoken')
-
-    def test_contains_form(self):
-        form = self.account_response.context.get('form')
-        self.assertIsInstance(form, ProfileForm)
-
-    def test_form_errors_invaild_negative_handicap(self):
-        form = self.account_post.context.get('form')
-        self.assertTrue(form.errors)
-
-
-
-class ValidProfileSetupPlusHandicapNumber(TestCase):
-
-    fixtures = ['fixture_feed_course']
-
-    def setUp(self):
-        url = reverse('signup')
-
-        self.data = {
-            'username': 'john',
-            'email': 'john@appleseed.com',
-            'first_name': 'john',
-            'last_name': 'appleseed',
-            'password1': 'abcdef123456',
-            'password2': 'abcdef123456',
-
-        }
-
-        self.profile_data = {
-            'handicap': '+2.6',
-            'bio': 'its me',
-        }
-
-        self.response = self.client.post(url, self.data)  # Have to go through signup url to create a one to one profile
-
-        # post an invalid form
-        self.account_post = self.client.post(reverse('my_account'), self.profile_data)
-        self.account_response = self.client.get(reverse('my_account'))
-
-    def test_account_status_code(self):
-        self.assertEquals(self.account_post.status_code, 302) # Should Redirect to Feed
-
-    def test_csrf(self):
-        self.assertContains(self.account_response, 'csrfmiddlewaretoken')
-
-    def test_contains_form(self):
-        form = self.account_response.context.get('form')
-        self.assertIsInstance(form, ProfileForm)
+        self.assertEquals(profile.bio, "Its Me!")
 
     def test_scores_were_created(self):
-        self.assertTrue(Scores.objects.exists()) # Scores should be created
-        self.assertEquals(Scores.objects.all().count(), 5) # Five total scores should be created
 
-        score = Scores.objects.first()
-        self.assertEquals(score.score, 39)
-
-class ValidProfileSetupNormalHandicapNumber(TestCase):
-
-    fixtures = ['fixture_feed_course']
-
-    def setUp(self):
-        url = reverse('signup')
-
-        self.data = {
-            'username': 'john',
-            'email': 'john@appleseed.com',
-            'first_name': 'john',
-            'last_name': 'appleseed',
-            'password1': 'abcdef123456',
-            'password2': 'abcdef123456',
-
-        }
-
-        self.profile_data = {
-            'handicap': '1',
-            'bio': 'its me',
-        }
-
-        self.response = self.client.post(url, self.data)  # Have to go through signup url to create a one to one profile
-
-        # post an invalid form
-        self.account_post = self.client.post(reverse('my_account'), self.profile_data)
-        self.account_response = self.client.get(reverse('my_account'))
-
-    def test_account_status_code(self):
-        self.assertEquals(self.account_post.status_code, 302) # Should Redirect to Feed
-
-    def test_csrf(self):
-        self.assertContains(self.account_response, 'csrfmiddlewaretoken')
-
-    def test_contains_form(self):
-        form = self.account_response.context.get('form')
-        self.assertIsInstance(form, ProfileForm)
-
-    def test_scores_were_created(self):
         self.assertTrue(Scores.objects.exists()) # Scores should be created
         self.assertEquals(Scores.objects.all().count(), 5) # Five total scores should be created
 
         score = Scores.objects.first()
         self.assertEquals(score.score, 35) # Test quota was created successfully
+
+    def test_user_authentication(self):
+        user = self.feedResponse.context.get('user')
+        self.assertTrue(user.is_authenticated)
+
+class SignupPageInvalidSubmission(SignUpTest):
+
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.signupData = {
+            'username': 'john',
+            'email': 'john@appleseed..com',
+            'first_name': 'john',
+            'last_name': 'appleseed',
+            'password1': 'abcdef123456',
+            'password2': 'abcdef123456',
+
+        }
+
+    def test_signup_status_code(self):
+        self.assertEquals(self.signupPost.status_code, 200)
+
+    def test_form_errors(self):
+        form = self.signupPost.context.get('form')
+        self.assertTrue(form.errors)
+
+    def test_user_not_created(self):
+        self.assertFalse(User.objects.exists())
+
+class ProfilePageInvalidSubmission(SignUpTest):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        cls.profileData = {
+            'handicap': '2..5',
+            'bio': 'its me',
+         }
+
+    def setUp(self):
+        super().setUp()
+
+        self.form = self.profilePost.context.get('form')
+
+    def test_account_status_code(self):
+        # Invalid submission should not redirect
+        self.assertEquals(self.profilePost.status_code, 200)
+
+
+    def test_csrf(self):
+        self.assertContains(self.profilePost, 'csrfmiddlewaretoken')
+
+    def test_contains_form(self):
+
+        self.assertIsInstance(self.form, ProfileForm)
+
+    def test_form_contains_errors(self):
+        self.assertTrue(self.form.errors)
+
+    def test_scores_were_not_created(self):
+        self.assertFalse(Scores.objects.exists())
+
+class ProfilePageInvalidSumbissionNegativeHandicap(SignUpTest):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        cls.profileData = {
+            'handicap': '-2.5',
+            'bio': 'its me',
+        }
+
+    def setUp(self):
+        super().setUp()
+
+        self.form = self.profilePost.context.get('form')
+
+    def test_form_contains_errors(self):
+        self.assertTrue(self.form.errors)
+
+    def test_scores_were_not_created(self):
+        self.assertFalse(Scores.objects.exists())
+
+class ProfilePageValidSubmissionPlusHandicapNumber(SignUpTest):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        cls.profileData = {
+            'handicap': '+2.5',
+            'bio': 'its me',
+        }
+
+    def test_scores_were_created_successfully(self):
+        self.assertEquals(Scores.objects.count(), 5) # 5 Scores Should Be Created
+
+        score = Scores.objects.first()
+        self.assertEquals(score.score, 38) # Test Quota Created Successfully.
