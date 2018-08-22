@@ -5,9 +5,12 @@ from accounts.models import Profile, Scores
 from feed.models import Course, Dogfight
 from django.utils import timezone
 
-# Create your views here.
+# TODO: Create Currnet Player Table, Include Watiting List
+
 class FeedView(TemplateView):
     template_name = 'feed/feed.html'
+
+
 
 
     def get_context_data(self, **kwargs):
@@ -22,13 +25,10 @@ class FeedView(TemplateView):
         return context
 
 
-
 class CourseView(DetailView):
     model = Course
     context_object_name = 'course'
     template_name = 'feed/course.html'
-
-
 
 
 

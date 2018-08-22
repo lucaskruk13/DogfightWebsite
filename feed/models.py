@@ -1,5 +1,17 @@
 from django.db import models
 from django.utils import timezone
+from datetime import datetime,timedelta, time
+
+
+def get_next_weekday(startdate, weekday):
+    """
+    @startdate: given date, in format '2013-05-25'
+    @weekday: week day as a integer, between 0 (Monday) to 6 (Sunday)
+    """
+    d = datetime.strptime(startdate, '%Y-%m-%d')
+    t = timedelta((7 + weekday - d.weekday()) % 7)
+    return (d + t).strftime('%Y-%m-%d')
+
 
 class Course(models.Model):
     name = models.CharField(max_length=50, blank=False, null=False)
@@ -14,11 +26,12 @@ class Course(models.Model):
         return "{} - {}".format(self.name, self.location)
 
 
-
-
 class Dogfight(models.Model):
-    date = models.DateField(default=timezone.now, blank=False, null=False)
-    start_time = models.TimeField(default=timezone.now, blank=False, null=False)
+
+
+
+    date = models.DateField(default=get_next_weekday(timezone.now().strftime('%Y-%m-%d'), 5), blank=False, null=False)
+    start_time = models.TimeField(blank=False, null=False, default=time(hour=7, minute=30))
     number_of_groups = models.IntegerField(blank=False, null=False)
     course = models.ForeignKey(Course, related_name='dogfight_course', on_delete=models.CASCADE)
 
@@ -28,3 +41,8 @@ class Dogfight(models.Model):
 
     def formal_text(self):
         return "The Current Dogfight is at {} on {}. There are {} Tee Times starting at {}. <br /><br /><small>Below is the players currently signed up.</small>".format(self.course.name, self.date, self.number_of_groups, self.start_time)
+
+
+
+
+# TODO: Create Current Player Model, include Waiting List based off of number_of_groups
