@@ -7,12 +7,16 @@
 
 {% block content %}
 
-<div class="parallax-window" data-parallax="scroll" data-image-src="{% static dogfight.course.img %}"></div>
+    {% if dogfight %}
+        <div class="parallax-window" data-parallax="scroll" data-image-src="{% static dogfight.course.img %}"></div>
 
-<div class="container-fluid" style="border: 1px solid black; height: 500px">
-    <div class="container text-center">
-        <h1>{{ dogfight.formal_text|safe }}</h1>
-    </div>
+        <div class="container-fluid" style="border: 1px solid black; height: 500px">
+        <div class="container text-center">
+            <h1>{{ dogfight.formal_text|safe }}</h1>
+        </div>
+
+    {% endif %}
+
 </div>
 
 

@@ -32,7 +32,7 @@ class Dogfight(models.Model):
 
     date = models.DateField(default=get_next_weekday(timezone.now().strftime('%Y-%m-%d'), 5), blank=False, null=False)
     start_time = models.TimeField(blank=False, null=False, default=time(hour=7, minute=30))
-    number_of_groups = models.IntegerField(blank=False, null=False)
+    number_of_groups = models.IntegerField(blank=False, null=False, default=5)
     course = models.ForeignKey(Course, related_name='dogfight_course', on_delete=models.CASCADE)
 
 

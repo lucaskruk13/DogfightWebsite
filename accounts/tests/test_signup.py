@@ -8,37 +8,6 @@ from accounts.forms import ProfileForm
 
 # Create your tests here.
 
-class ProfileTest(TestCase):
-    fixtures = ['fixture_feed_course']
-
-
-    @classmethod
-    def setUpTestData(cls):
-        cls.url = reverse('signup')
-        cls.my_account_url = reverse('my_account')
-
-        cls.data = {
-            'username': 'john',
-            'email': 'john@appleseed.com',
-            'first_name': 'john',
-            'last_name': 'appleseed',
-            'password1': 'abcdef123456',
-            'password2': 'abcdef123456',
-
-        }
-
-        cls.profile_data = {
-            'handicap': '1',
-            'bio': 'its me',
-        }
-
-    def setUp(self):
-        self.response = self.client.post(self.url, self.data)
-
-        # post an invalid form
-        self.account_post = self.client.post(reverse('my_account'), self.profile_data)
-        self.account_response = self.client.get(reverse('my_account'))
-
 class SignUpTest(TestCase):
     fixtures = ['fixture_feed_course']
 
