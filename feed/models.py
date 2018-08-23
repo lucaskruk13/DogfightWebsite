@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from datetime import datetime,timedelta, time
+from django.contrib.auth.models import User
 
 
 def get_next_weekday(startdate, weekday):
@@ -28,8 +29,6 @@ class Course(models.Model):
 
 class Dogfight(models.Model):
 
-
-
     date = models.DateField(default=get_next_weekday(timezone.now().strftime('%Y-%m-%d'), 5), blank=False, null=False)
     start_time = models.TimeField(blank=False, null=False, default=time(hour=7, minute=30))
     number_of_groups = models.IntegerField(blank=False, null=False, default=5)
@@ -46,3 +45,10 @@ class Dogfight(models.Model):
 
 
 # TODO: Create Current Player Model, include Waiting List based off of number_of_groups
+class DogfightList(models.Model):
+    dogfight = models.ForeignKey(Dogfight, related_name='dogfight', on_delete=models.CASCADE)
+    golfer = models.ForeignKey(User, related_name='user', on_delete=models.CASCADE)
+    waiting = models.BooleanField(default=False, blank=False, null=False)
+
+    def __str__(self):
+        return "{}, {} | {} at {} | Waiting: {}".format(self.golfer.last_name, self.golfer.first_name, self.dogfight.date, self.dogfight.course, self.waiting)
