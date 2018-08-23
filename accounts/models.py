@@ -30,6 +30,9 @@ class Profile(models.Model):
     def getHandicap(self):
         return float(self.handicap)
 
+    def __str__(self):
+        return "{} | {}, {}".format(self.user.username, self.user.last_name, self.user.first_name)
+
 
 class Scores(models.Model):
     profile = models.ForeignKey(Profile, related_name='scores', on_delete=models.CASCADE) # Every Score has a profile
