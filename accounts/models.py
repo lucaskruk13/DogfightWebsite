@@ -23,7 +23,7 @@ class Profile(models.Model):
     initial = models.BooleanField(default=True) # Initial Value to update the handicap
 
     def getCurrentQuota(self):
-        avg = Scores.objects.filter(profile=self).order_by('-created_at')[:5].aggregate(Avg('score'))
+        avg = Scores.objects.filter(user=self.user).order_by('-created_at')[:5].aggregate(Avg('score'))
         if avg['score__avg']:
             return round(avg['score__avg'])
 
@@ -33,19 +33,15 @@ class Profile(models.Model):
     def __str__(self):
         return "{} | {}, {}".format(self.user.username, self.user.last_name, self.user.first_name)
 
-
 class Scores(models.Model):
     user = models.ForeignKey(User, related_name='scores', on_delete=models.CASCADE) # Every Score has a profile
     dogfight = models.ForeignKey(Dogfight, related_name='scores_dogfight', on_delete=models.CASCADE, default=1) # Every Score has a course
-
-
     score = models.IntegerField(default=0, null=False, blank=False)
     created_at = models.DateField(auto_now_add=True)
 
-
 def on_profile_save(sender, instance, **kwargs):
 
-    scoresCount = Scores.objects.filter(profile=instance).count()
+    scoresCount = Scores.objects.filter(user=instance.user).count()
     handicap = instance.handicap
 
     # if there are no scores, but the Initial Value is false, let's add the baseline scores
@@ -53,11 +49,10 @@ def on_profile_save(sender, instance, **kwargs):
     if ((not instance.initial) and (scoresCount == 0)):
         for i in range(5):
             score = Scores()
-            score.profile = instance # Instance is of class Profile
+            score.user = instance.user # Instance is of class Profile
             score.score = generateInitialQuota(instance.handicap)
             score.course = Course.objects.first()
             score.save()
-
 
 post_save.connect(on_profile_save, sender=Profile) # Links Scores saving function to the function on_profile_save
 
@@ -69,7 +64,6 @@ def create_user_profile(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
-
 
 def generateInitialQuota(handicap):
 
