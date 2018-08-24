@@ -39,17 +39,17 @@ class Dogfight(models.Model):
         return "Dogfight on {} | {}".format(self.course.name, self.date)
 
     def formal_text(self):
-        return "The Current Dogfight is at {} on {}. There are {} Tee Times starting at {}. <br /><br /><small>Below is the players currently signed up.</small>".format(self.course.name, self.date, self.number_of_groups, self.start_time)
+        return "The Current Dogfight is at {} on {}.<br /> There are {} Tee Times starting at {}. <br /><br />".format(self.course.name, self.date, self.number_of_groups, self.start_time)
 
 
 
 class DogfightPlayer(models.Model):
     dogfight = models.ForeignKey(Dogfight, related_name='dogfight', on_delete=models.CASCADE)
-    golfer = models.ForeignKey(User, related_name='user', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='user', on_delete=models.CASCADE)
     waiting = models.BooleanField(default=False, blank=False, null=False)
 
     def __str__(self):
-        return "{}, {}".format(self.golfer.last_name, self.golfer.first_name)
+        return "{}, {}".format(self.user.last_name, self.user.first_name)
 
     def max_num_of_players(self):
         return self.dogfight.number_of_groups * 4

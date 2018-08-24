@@ -5,11 +5,13 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from accounts.models import Profile, Scores
 from accounts.forms import ProfileForm
-
-# Create your tests here.
+from django.core import management
 
 class SignUpTest(TestCase):
-    fixtures = ['fixture_feed_course']
+
+    # Dont Import Auth Data Fixture as Test Cases Create accounts and they can create a PK Collision.
+    fixtures = ['initial_feed.json']
+
 
     @classmethod
     def setUpClass(cls):
@@ -47,7 +49,6 @@ class SignUpTest(TestCase):
         self.profilePost = self.client.post(self.my_account_url, self.profileData)
 
         self.feedResponse = self.client.get(self.feed_url)
-
 
 class SignupPageSuccessfulTests(SignUpTest):
 
