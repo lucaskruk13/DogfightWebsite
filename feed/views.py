@@ -16,12 +16,18 @@ class FeedView(TemplateView):
         # Call the base implementation to get a context
         context = super().get_context_data(**kwargs)
 
+
+
         # Add in a QuerySet of all the Courses
         context['course_list'] = Course.objects.all()
         context['dogfight'] = get_current_dogfight()
         context['player_list'] = get_player_list()
 
+
         return context
+
+
+
 
 
 class CourseView(DetailView):
@@ -32,10 +38,17 @@ class CourseView(DetailView):
 
 def get_player_list():
     dogfight = get_current_dogfight()
-    return DogfightPlayer.objects.filter(dogfight=dogfight)
+    return DogfightPlayer.objects.filter(dogfight=dogfight).order_by('user__last_name')
 
 def get_current_dogfight():
-    dogfight = Dogfight.objects.filter(date__gte=timezone.now()).order_by('date').first()
+
+    dogfight = Dogfight.objects.filter(date__gte=timezone.now()).order_by('date').first() # Gets the upcoming dogfight, even if there are dogfights scheduled for a later date
     return dogfight
 
 
+# Yield successive n-sized
+# chunks from l.
+def create_groups(l, n):
+    # looping till length l
+    for i in range(0, len(l), n):
+        yield l[i:i + n]
