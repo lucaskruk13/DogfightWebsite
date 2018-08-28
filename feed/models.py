@@ -41,15 +41,16 @@ class Dogfight(models.Model):
     def formal_text(self):
         return "The Current Dogfight is at {} on {}.<br /> There are {} Tee Times starting at {}. <br /><br />".format(self.course.name, self.date, self.number_of_groups, self.start_time)
 
-
-
-class DogfightPlayer(models.Model):
-    dogfight = models.ForeignKey(Dogfight, related_name='dogfight', on_delete=models.CASCADE)
-    user = models.ForeignKey(User, related_name='user', on_delete=models.CASCADE)
-    waiting = models.BooleanField(default=False, blank=False, null=False)
-
-    def __str__(self):
-        return "{}, {}".format(self.user.last_name, self.user.first_name)
-
     def max_num_of_players(self):
-        return self.dogfight.number_of_groups * 4
+        return self.number_of_groups * 4
+
+# TODO: Create Sign Up Form. Using SCORES model creates a blank score, so to account for that I've created a 'countable' flag. When The User Submits their bid to signup, countable needs to be faulse. When they save their score, it needs to be swtiched.
+
+# class DogfightPlayer(models.Model):
+#     dogfight = models.ForeignKey(Dogfight, related_name='dogfight', on_delete=models.CASCADE)
+#     user = models.ForeignKey(User, related_name='user', on_delete=models.CASCADE)
+#     waiting = models.BooleanField(default=False, blank=False, null=False)
+#
+#     def __str__(self):
+#         return "{}, {}".format(self.user.last_name, self.user.first_name)
+

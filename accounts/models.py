@@ -23,12 +23,15 @@ class Profile(models.Model):
     initial = models.BooleanField(default=True) # Initial Value to update the handicap
 
     def getCurrentQuota(self):
-        avg = Scores.objects.filter(user=self.user).order_by('-created_at')[:5].aggregate(Avg('score'))
+        avg = Scores.objects.filter(user=self.user, countable=True).order_by('-created_at')[:5].aggregate(Avg('score'))
         if avg['score__avg']:
             return round(avg['score__avg'])
 
     def getHandicap(self):
         return float(self.handicap)
+
+    def fullname(self):
+        return "{}, {}".format(self.user.last_name, self.user.first_name)
 
     def __str__(self):
         return "{} | {}, {}".format(self.user.username, self.user.last_name, self.user.first_name)
@@ -38,6 +41,15 @@ class Scores(models.Model):
     dogfight = models.ForeignKey(Dogfight, related_name='scores_dogfight', on_delete=models.CASCADE, default=1) # Every Score has a course
     score = models.IntegerField(default=0, null=False, blank=False)
     created_at = models.DateField(auto_now_add=True)
+    countable = models.BooleanField(default=False) # Whenever we sign up it will create a new default score, but we cannot count that in the quota
+
+# TODO: Fix scores so it updates the countable flag upon save
+def on_scores_save(sender, instance, **kwargs):
+
+    if instance.score >0:
+        instance.countable = True;
+
+    return instance
 
 def on_profile_save(sender, instance, **kwargs):
 
@@ -55,6 +67,7 @@ def on_profile_save(sender, instance, **kwargs):
             score.save()
 
 post_save.connect(on_profile_save, sender=Profile) # Links Scores saving function to the function on_profile_save
+post_save.connect(on_scores_save, sender=Scores) # Links on_scores_saved to be called when scores are saved.
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):

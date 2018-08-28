@@ -5,28 +5,55 @@
     Dogfight | Feed
 {% endblock title %}
 
+{% block stylesheet %}
+    {% if dogfight.course.img %}
+        <link rel="stylesheet" href="{% static 'css/base-parallax.css' %}" type="text/css">
+    {% else %}
+        <link rel="stylesheet" href="{% static 'css/base-no-parallax.css' %}" type="text/css">
+    {% endif %}
+{% endblock stylesheet%}
+
 {% block content %}
 
     {% if dogfight %}
-        <div class="parallax-window" data-parallax="scroll" data-image-src="{% static dogfight.course.img %}"></div>
 
-        <div class="container-fluid" style="height: 1000px;">
-        <div class="container text-center">
-            <h1>{{ dogfight.formal_text|safe }}</h1>
+        {% if dogfight.course.img %}
+            <div class="parallax-window" data-parallax="scroll" data-image-src="{% static dogfight.course.img %}"></div>
+        {% endif %}
+
+        <div class="container-fluid" >
+            <div class="container text-center">
+                <h3>{{ dogfight.formal_text|safe }}</h3>
+                {% if player_list %}
+                    <h5>Below Are The Players Currently Signed Up</h5>
+                {% else %}
+                    <h5 style="color: red;">No Players Currently Signed Up</h5>
+                {% endif %}
+            </div>
+
+            {% if scores_list %}
+                <div class="container" id="feed-table-container" style="padding-bottom: 50px;">
+                    <table class="table table-striped" id="feed-table">
+                        <thead>
+                            <th scope="col">Golfer</th>
+                            <th scope="col">Quota</th>
+                        </thead>
+
+                        <tbody>
+                            {% for score in scores_list %}
+                                <tr {% if user == score.user %} style="background-color: yellow;" {% endif %}>
+                                    <td>{{ score.user.profile.fullname }}</td>
+                                    <td>{{ score.user.profile.getCurrentQuota }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+
         </div>
 
     {% endif %}
-
-</div>
-
-
-    {% if user.profile.initial %}
-        <p style="color: red">No Handicap Entered</p>
-    {% else %}
-        <p>Current Quota: {{ user.profile.getCurrentQuota }}</p>
-    {% endif %}
-
-
 
 {% endblock content %}
 

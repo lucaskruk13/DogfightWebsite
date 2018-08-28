@@ -1,12 +1,16 @@
 from django.contrib import admin
-from .models import Course, Dogfight, DogfightPlayer
+from .models import Course, Dogfight
+from accounts.models import Scores
 
-class DogfightPlayerTabular(admin.TabularInline):
-    model = DogfightPlayer
+class ScoresTabular(admin.TabularInline):
+    model = Scores
     extra = 1
 
+
+
+
 class DogfightAdmin(admin.ModelAdmin):
-    inlines = [DogfightPlayerTabular]
+    inlines = [ScoresTabular]
 
 
 
