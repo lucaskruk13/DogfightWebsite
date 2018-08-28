@@ -5,8 +5,6 @@
 <div class="container">
 
 
-{# TODO: Clean up form errors #}
-
     {% if messages %}
         {% for message in messages %}
             <div class="alert {% if message.tags %} alert-{{ message.tags }}{% endif %}">{{ message|safe }}</div>
@@ -15,25 +13,24 @@
 
     {% if form.errors %}
         <div class="row justify-content-center">
-        <div class="col-lg-6 col-md-8 col-sm-8">
-
-        <div class="alert alert-danger">
-            <h4>Please fix the following errors</h4>
-            <ul>
-                {% for field in form %}
-                    {% if field.errors %}
-                        {% for error in field.errors %}
-                            <li><a href="#id_{{ field.name }}" class="error">{{ error|escape }}</a></li>
+            <div class="col-lg-6 col-md-8 col-sm-8">
+                <div class="alert alert-danger">
+                    <h4>Please fix the following errors</h4>
+                    <ul>
+                        {% for field in form %}
+                            {% if field.errors %}
+                                {% for error in field.errors %}
+                                    <li><a href="#id_{{ field.name }}" class="error">{{ error|escape }}</a></li>
+                                {% endfor %}
+                            {% endif %}
                         {% endfor %}
-                    {% endif %}
-                {% endfor %}
-            </ul>
+                    </ul>
 
-            {% if form.non_field_errors %}
-                {{ form.non_field_errors }}
-            {% endif %}
-        </div>
-        </div>
+                    {% if form.non_field_errors %}
+                        {{ form.non_field_errors }}
+                    {% endif %}
+                </div>
+            </div>
         </div>
     {% endif %}
 
