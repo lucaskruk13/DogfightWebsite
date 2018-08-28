@@ -24,7 +24,9 @@ urlpatterns = [
 
     # Feed Urls
     path('', feed_views.FeedView.as_view(), name='feed'),
-    path('course/<int:pk>', feed_views.CourseView.as_view(), name='course'),
+    path('course/<int:pk>/', feed_views.CourseView.as_view(), name='course'),
+    path('dogfightSignup/<int:dogfight_pk>/<int:user_pk>/', feed_views.dogfight_signup, name='dogfight_signup'),
+    path('cancelDogfightSignup/<int:dogfight_pk>/<int:user_pk>/', feed_views.cancel_dogfight_signup, name='cancel_dogfight_signup'),
 
     # Admin Urls
     path('admin/', admin.site.urls),

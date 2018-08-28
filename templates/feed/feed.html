@@ -21,13 +21,35 @@
             <div class="parallax-window" data-parallax="scroll" data-image-src="{% static dogfight.course.img %}"></div>
         {% endif %}
 
+        {% for message in messages %}
+            <div class="alert {{ message.tags }} alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+                {{ message }}
+            </div>
+        {% endfor %}
+
         <div class="container-fluid" >
-            <div class="container text-center">
+            <div class="container text-center" style="padding-bottom: 20px;">
                 <h3>{{ dogfight.formal_text|safe }}</h3>
-                {% if player_list %}
+                {% if scores_list %}
                     <h5>Below Are The Players Currently Signed Up</h5>
                 {% else %}
                     <h5 style="color: red;">No Players Currently Signed Up</h5>
+                {% endif %}
+
+                {% if user.is_authenticated %} {# Only Show the Signup Button if Signed In #}
+
+                    {% if not signed_up %}
+                        <a href="{% url 'dogfight_signup' dogfight.pk user.pk %}" id="dogfight-signup-button">
+                            <button class="btn btn-primary col-lg-12 col-md-12 col-sm-12">Sign Up</button>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'cancel_dogfight_signup' dogfight.pk user.pk %}" id="dogfight-signup-cancel-button">
+                            <button class="btn btn-primary col-lg-12 col-md-12 col-sm-12">Cancel Sign Up</button>
+                        </a>
+                    {% endif %}
                 {% endif %}
             </div>
 
