@@ -44,7 +44,6 @@ class Dogfight(models.Model):
     def max_num_of_players(self):
         return self.number_of_groups * 4
 
-# TODO: Create Sign Up Form. Using SCORES model creates a blank score, so to account for that I've created a 'countable' flag. When The User Submits their bid to signup, countable needs to be faulse. When they save their score, it needs to be swtiched.
 
 # class DogfightPlayer(models.Model):
 #     dogfight = models.ForeignKey(Dogfight, related_name='dogfight', on_delete=models.CASCADE)

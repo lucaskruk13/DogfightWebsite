@@ -8,7 +8,7 @@ from django.utils import timezone
 from feed.forms import DogfightSignupForm
 from django.contrib import messages
 
-# TODO: Create Currnet Player Table, Include Watiting List
+# TODO: Include Watiting List Table
 
 class FeedView(TemplateView):
     template_name = 'feed/feed.html'
@@ -36,7 +36,6 @@ class CourseView(DetailView):
 
 
 # Creating a url to sign up the golfer
-# TODO: Write Dogfight Signup Tests. Nothing started as of yet.
 def dogfight_signup(request, dogfight_pk, user_pk):
 
     user = request.user # Get the requesting User
@@ -49,13 +48,16 @@ def dogfight_signup(request, dogfight_pk, user_pk):
 
     return redirect('feed') # Redirect to the Feed becuase we have nothing else to show them.
 
-# TODO: Write Cancel Dogfight Tests.
+
 def cancel_dogfight_signup(request, dogfight_pk, user_pk):
 
     user = request.user
     dogfight = get_current_dogfight()
 
-    score = Scores.objects.filter(user=user, dogfight=dogfight).delete()
+    Scores.objects.filter(user=user, dogfight=dogfight).delete()
+
+    if not Scores.objects.filter(user=user, dogfight=dogfight).count():
+        messages.info(request, 'Successfully Removed from this weeks Dogfight')
 
     return redirect('feed')
 

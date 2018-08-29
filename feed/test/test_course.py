@@ -18,5 +18,5 @@ class CourseViewTests(TestCase):
         self.assertEquals(self.response.status_code, 200)
 
     def test_course_url_resolves_course_view(self):
-        view = resolve('/course/1')
+        view = resolve('/course/1/')
         self.assertEquals(view.func.view_class, CourseView)

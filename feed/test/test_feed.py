@@ -1,7 +1,8 @@
 from feed.views import FeedView, CourseView
 from django.test import TestCase
 from django.urls import reverse, resolve
-from feed.models import Course, Dogfight, DogfightPlayer
+from feed.models import Course, Dogfight
+from accounts.models import Profile, Scores
 from datetime import timezone
 from django.utils import timezone
 from django.contrib.auth.models import User
@@ -17,9 +18,44 @@ class FeedTest(TestCase):
 
         cls.url = reverse('feed')
 
+
     def setUp(self):
         self.feedResponse = self.client.get(self.url)
         self.feedView = resolve('/')
+
+
+class AuthenticatedFeedTest(FeedTest):
+
+    fixtures = ['course_fixture']
+
+    @classmethod
+    def setUpClass(cls):
+        super(AuthenticatedFeedTest, cls).setUpClass()
+
+        # Create the First User
+        cls.username = 'johnappleseed'
+        cls.password = 'secret123'
+
+        cls.user = User.objects.create(first_name='John', last_name='Appleseed', email='john@appleseed.com',
+                                       username=cls.username)
+        cls.user.set_password(cls.password)
+        cls.user.save()
+
+        # Create a Dogfight
+        cls.dogfight = Dogfight.objects.create(course=Course.objects.first())
+
+        # Access signup after setup so we have access to the User who is authenticated
+        cls.dogfightSignupURL = reverse('dogfight_signup',
+                                         kwargs={"dogfight_pk": cls.dogfight.pk,
+                                                 "user_pk": cls.user.pk})  # Get the signup url
+
+    def setUp(self):
+
+
+        # Log the User In
+        self.client.login(username=self.username, password=self.password)
+
+        super().setUp()
 
 class TestDogfightNotSetup(FeedTest):
 
@@ -50,7 +86,7 @@ class TestWithDogfightSetup(FeedTest):
 
         # Create a dogfight, defaulting logic should allow it to be picked up by the feed.
         dogfight = Dogfight.objects.create(course=Course.objects.first())
-        DogfightPlayer.objects.create(user=User.objects.first(), dogfight=dogfight)
+        Scores.objects.create(user=User.objects.first(), dogfight=dogfight)
 
 
     def test_feed_status_code(self):
@@ -58,10 +94,8 @@ class TestWithDogfightSetup(FeedTest):
 
         # Test Dogfight's exists
         dogfight = Dogfight.objects.first()
-        dogfightPlayer = DogfightPlayer.objects.first()
+        score = Scores.objects.first()
 
-        print (dogfight)
-        print (dogfightPlayer)
 
     def test_dogfight_present(self):
         # If a dogfight is available, then the parallax window will show
@@ -97,3 +131,71 @@ class TestMultipleDogfightsUpcoming(FeedTest):
         self.assertTrue(currentDogfight.date, timezone.now() + timezone.timedelta(days=2))
 
         self.assertTrue(currentDogfight.course, Course.objects.first())
+
+class TestFeedPageNoUserLoggedIn(FeedTest):
+
+    @classmethod
+    def setUpTestData(cls):
+        # Create a dogfight
+        Dogfight.objects.create(course=Course.objects.first())
+
+    def test_the_user_is_authenticated(self):
+        user = self.feedResponse.context.get('user')
+        self.assertFalse(user.is_authenticated) # No User Should Be Logged In
+
+    def test_no_signup_button_present(self):
+
+        # Feed Should not have signup buttons for the dogfight
+        self.assertNotContains(self.feedResponse, 'dogfight-signup-button')
+        self.assertNotContains(self.feedResponse, 'dogfight-signup-cancel-button')
+
+    def test_login_and_signup_are_present_in_navigation(self):
+        self.assertContains(self.feedResponse, 'login')
+        self.assertContains(self.feedResponse, 'logout')
+
+class TestFeedPageUserLoggedIn(AuthenticatedFeedTest):
+
+    def setUp(self):
+        super().setUp()
+
+        self.dogfightSignupRequest = self.client.get(self.dogfightSignupURL)
+
+    def test_user_is_logged_in(self):
+        self.assertTrue(self.user.is_authenticated)
+
+    def test_signup_button_appears(self):
+
+        self.assertContains(self.feedResponse, 'dogfight-signup-button')
+
+    def test_signup_for_upcoming_dogfight(self):
+
+        self.assertRedirects(self.dogfightSignupRequest, self.url) # should redirect to home page
+
+        self.assertTrue(Scores.objects.filter(dogfight=self.dogfight, user=self.user).exists()) # New Score for this Dogfight should be created
+
+
+class TestFeedPageUserAlreadySignedUp(AuthenticatedFeedTest):
+
+    def setUp(self):
+        # Create a Score object before signin so the request picks it up
+        Scores.objects.create(dogfight=self.dogfight, user=self.user)
+
+        super().setUp()
+
+        # Create a request to the cancel button
+        cancelSignupURL = reverse('cancel_dogfight_signup', kwargs={'dogfight_pk': self.dogfight.pk, 'user_pk':self.user.pk})
+        self.cancelRequest = self.client.get(cancelSignupURL)
+
+        self.feedResponseAfterCancel = self.client.get(self.url)
+
+    def test_cancel_button_appears(self):
+        self.assertContains(self.feedResponse, 'dogfight-signup-cancel-button')
+
+    def test_cancel_redirects_to_feed(self):
+        self.assertRedirects(self.cancelRequest, self.url) # Should return to the home page
+
+    def test_signup_button_returns(self):
+        self.assertContains(self.feedResponseAfterCancel, 'dogfight-signup-button')
+
+    def test_score_was_destroyed(self):
+        self.assertFalse(Scores.objects.filter(dogfight=self.dogfight, user=self.user).exists())

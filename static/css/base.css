@@ -17,3 +17,14 @@ body{
 
 }
 
+.card{
+    margin: 0 auto;
+    float: none;
+    margin-bottom: 10px;
+}
+
+#feed-table{
+    margin: 0;
+    padding: 0;
+    float: none;
+}
