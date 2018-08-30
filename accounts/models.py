@@ -21,11 +21,15 @@ class Profile(models.Model):
         )
     ])
     initial = models.BooleanField(default=True) # Initial Value to update the handicap
+    profile_image_path = models.CharField(default='img/default_profile.png', blank=False, null=False, max_length=75)
+
 
     def getCurrentQuota(self):
         avg = Scores.objects.filter(user=self.user, countable=True).order_by('-created_at')[:5].aggregate(Avg('score'))
         if avg['score__avg']:
-            return round(avg['score__avg'])
+            return avg['score__avg']
+
+
 
     def getHandicap(self):
         return float(self.handicap)
@@ -35,6 +39,10 @@ class Profile(models.Model):
 
     def __str__(self):
         return "{} | {}, {}".format(self.user.username, self.user.last_name, self.user.first_name)
+
+    def getRoundedQuota(self):
+        return round(self.getCurrentQuota())
+
 
 class Scores(models.Model):
     user = models.ForeignKey(User, related_name='scores', on_delete=models.CASCADE) # Every Score has a profile

@@ -28,6 +28,9 @@ urlpatterns = [
     path('dogfightSignup/<int:dogfight_pk>/<int:user_pk>/', feed_views.dogfight_signup, name='dogfight_signup'),
     path('cancelDogfightSignup/<int:dogfight_pk>/<int:user_pk>/', feed_views.cancel_dogfight_signup, name='cancel_dogfight_signup'),
 
+    # Profile
+    path('profile/<int:user_pk>/', account_views.ProfileView.as_view(template_name='accounts/profile.html'), name='profile'),
+
     # Admin Urls
     path('admin/', admin.site.urls),
 

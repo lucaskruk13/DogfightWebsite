@@ -54,22 +54,31 @@
             </div>
 
             {% if scores_list %}
-                <div class="container" id="feed-table-container" style="padding-bottom: 50px;">
-                    <table class="table table-striped" id="feed-table">
-                        <thead>
-                            <th scope="col">Golfer</th>
-                            <th scope="col">Quota</th>
-                        </thead>
+                <div class="card" id="feed-table-container">
+                    <div class="card-header">
+                        Dogfight
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-striped table-borderless" id="feed-table">
+                            <thead>
+                                <th scope="col">Golfer</th>
+                                <th scope="col">Quota</th>
+                                <th scope="col">Precise Quota</th>
+                            </thead>
 
-                        <tbody>
-                            {% for score in scores_list %}
-                                <tr {% if user == score.user %} style="background-color: yellow;" {% endif %}>
-                                    <td>{{ score.user.profile.fullname }}</td>
-                                    <td>{{ score.user.profile.getCurrentQuota }}</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                            <tbody>
+                            {# Wrap the TR in a link to the user  #}
+                                {% for score in scores_list %}
+                                    <tr {% if user == score.user %} style="background-color: yellow;" {% endif %}>
+
+                                        <td><a href="{% url 'profile' score.user.pk %}">{{ score.user.profile.fullname }}</a></td>
+                                        <td>{{ score.user.profile.getRoundedQuota }}</td>
+                                        <td>{{ score.user.profile.getCurrentQuota }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             {% endif %}
 

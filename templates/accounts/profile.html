@@ -1,0 +1,44 @@
+{% extends 'common/base.html' %}
+{% load static %}
+{# TODO: Create Profile View #}
+{% block content %}
+
+    <div class="container text-center col-lg-8 col-md-8 col-sm-8">
+
+    <div class="card">
+{# TODO: Handle Image Upload: Resize Image & create file path's for the images custom to each user #}
+        <img src="{% static profile.profile_image_path %}" alt="" class="card-img-top">
+
+        <div class="card-body">
+            {{ profile.fullname }}
+        </div>
+    </div>
+
+    </div>
+
+    {% if scores %}
+        <div class="container text-center col-lg-8 col-md-8 col-sm-8">
+            <div class="card">
+                <div class="card-header text-center">
+                    Previous Scores
+                </div>
+
+                <div class="card-body">
+                    <table class="table table-borderless">
+                    {% for score in scores %}
+                        {% if score.countable %}
+                        <tr>
+                            {# TODO: Maybe set the dogfight course to be Null for scores that were there before the website existed #}
+                            <td>{{ score.user }}</td>
+                            <td>{{ score.score }}</td>
+                            <td>{{ score.dogfight}}</td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    {% endif %}
+{% endblock content %}

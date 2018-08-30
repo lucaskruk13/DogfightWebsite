@@ -1,20 +1,23 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login as auth_login
 from .forms import SignUpForm, ProfileForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.generic import UpdateView
+from django.views.generic import UpdateView, DetailView
 from .models import Profile, Scores
+
 
 @method_decorator(login_required, name='dispatch')
 class ProfileUpdateView(UpdateView):
+
     model = Profile
     #fields = ['handicap', 'bio']
     template_name = 'accounts/my_account.html'
     success_url = reverse_lazy('feed')
-    form_class = ProfileForm
+    form_class = ProfileForm()
+
 
 
     def get_object(self, queryset=None):
@@ -29,6 +32,24 @@ class ProfileUpdateView(UpdateView):
         profile.save()
         return super().form_valid(form)
 
+
+class ProfileView(DetailView):
+
+    model = Profile
+    template_name = 'accounts/profile.html'
+    pk_url_kwarg = "user_pk"
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(Profile, pk=self.kwargs.get('user_pk'))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Get additional Context
+
+        context['scores'] = Scores.objects.filter(user=self.kwargs.get('user_pk'))
+
+        return context
 
 
 # @method_decorator(login_required, name='dispatch')
