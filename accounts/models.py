@@ -5,7 +5,14 @@ from django.dispatch import receiver
 from django.db.models import Avg
 from django.core.validators import RegexValidator
 from feed.models import Course, Dogfight
+from datetime import datetime
 import re
+
+
+def user_directory_path(instance, filename):
+    # File will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    print (type(instance))
+    return 'user_{0}/profile/{1}.jpg'.format(instance.user.id, datetime.now())
 
 # Create your models here.
 class Profile(models.Model):
@@ -21,7 +28,8 @@ class Profile(models.Model):
         )
     ])
     initial = models.BooleanField(default=True) # Initial Value to update the handicap
-    profile_image_path = models.CharField(default='img/default_profile.png', blank=False, null=False, max_length=75)
+    profile_image = models.ImageField(upload_to=user_directory_path)
+
 
 
     def getCurrentQuota(self):
@@ -50,6 +58,10 @@ class Scores(models.Model):
     score = models.IntegerField(default=0, null=False, blank=False)
     created_at = models.DateField(auto_now_add=True)
     countable = models.BooleanField(default=False) # Whenever we sign up it will create a new default score, but we cannot count that in the quota
+
+
+
+
 
 # TODO: Fix scores so it updates the countable flag upon save
 def on_scores_save(sender, instance, **kwargs):

@@ -1,5 +1,6 @@
 {% extends 'common/base.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block title %}
     Dogfight | Feed
@@ -30,12 +31,10 @@
             </div>
         {% endfor %}
 
-        <div class="container-fluid" >
+        <div class="container-fluid col-md-10 col-lg-10 col-sm-10" >
             <div class="container text-center" style="padding-bottom: 20px;">
                 <h3>{{ dogfight.formal_text|safe }}</h3>
-                {% if scores_list %}
-                    <h5>Below Are The Players Currently Signed Up</h5>
-                {% else %}
+                {% if not scores_list %}
                     <h5 style="color: red;">No Players Currently Signed Up</h5>
                 {% endif %}
 
@@ -53,13 +52,36 @@
                 {% endif %}
             </div>
 
+            {% if prize_money_dict %}
+
+                <div class="card">
+                    <div class="card-header">Prize Money</div>
+                    <div class="card-body">
+                        <table class="table text-center" align="center">
+                            <thead>
+                                {% for key, value in prize_money_dict.items %}
+                                    <th scope="col">{{ key|ordinal }}</th>
+                                {% endfor %}
+                            </thead>
+
+                                <tr>
+                                    {% for key, value in prize_money_dict.items %}
+                                        <td>${{ value }}</td>
+                                    {% endfor %}
+                                </tr>
+                        </table>
+                    </div>
+                </div>
+
+            {% endif %}
+
             {% if scores_list %}
                 <div class="card" id="feed-table-container">
-                    <div class="card-header">
-                        Dogfight
+                    <div class="card-header text-center">
+                        <strong>Currently Signed Up</strong>
                     </div>
                     <div class="card-body">
-                        <table class="table table-striped table-borderless" id="feed-table">
+                        <table class="table text-center table-striped table-borderless" id="feed-table">
                             <thead>
                                 <th scope="col">Golfer</th>
                                 <th scope="col">Quota</th>

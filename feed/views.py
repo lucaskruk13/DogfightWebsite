@@ -1,12 +1,11 @@
-from django.shortcuts import render, get_object_or_404, redirect, HttpResponseRedirect
-from django.urls import reverse_lazy
-from django.views.generic import TemplateView, DetailView, FormView
-from django.contrib.auth.models import User
-from accounts.models import Profile, Scores
+from django.shortcuts import redirect
+from django.views.generic import TemplateView, DetailView
+from accounts.models import Scores
 from feed.models import Course, Dogfight
 from django.utils import timezone
-from feed.forms import DogfightSignupForm
+
 from django.contrib import messages
+
 
 # TODO: Include Watiting List Table
 
@@ -19,12 +18,13 @@ class FeedView(TemplateView):
         context = super().get_context_data(**kwargs)
 
         dogfight = get_current_dogfight()
-
+        scores = get_scores_list()
         # Add in a QuerySet of all the Courses
         context['course_list'] = Course.objects.all()
         context['dogfight'] = dogfight
-        context['scores_list'] = get_scores_list()
+        context['scores_list'] = scores
         context['signed_up'] = is_signed_up(self.request.user, dogfight)
+        context['prize_money_dict'] = dogfight.get_prize_money_dictionary_for_num_players(scores.count())
 
         return context
 

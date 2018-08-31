@@ -20,6 +20,9 @@ from accounts import views as account_views
 from django.contrib.auth import views as auth_views
 from feed import views as course_views
 
+from django.conf import settings
+from django.conf.urls.static import static
+
 urlpatterns = [
 
     # Feed Urls
@@ -54,4 +57,10 @@ urlpatterns = [
     path('settings/account/', account_views.ProfileUpdateView.as_view(), name='my_account'),
     path('settings/password/', auth_views.PasswordChangeView.as_view(template_name='accounts/auth/password_change.html'), name='password_change'),
     path('settings/password/done/', auth_views.PasswordChangeDoneView.as_view(template_name='accounts/auth/password_change_done.html'),name='password_change_done'),
+
+
 ]
+
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

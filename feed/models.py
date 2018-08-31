@@ -34,6 +34,37 @@ class Dogfight(models.Model):
     number_of_groups = models.IntegerField(blank=False, null=False, default=5)
     course = models.ForeignKey(Course, related_name='dogfight_course', on_delete=models.CASCADE)
 
+    # Create the prize money Dictionary, since there is no specific patter or percentage, we have to do it the hard way
+    prizeMoneyDict = {}
+    prizeMoneyDict[6] = {1: 50, 2: 30}
+    prizeMoneyDict[7] = {1: 50, 2: 30, 3: 15}
+    prizeMoneyDict[8] = {1: 55, 2: 35, 3: 20}
+    prizeMoneyDict[9] = {1: 60, 2: 40, 3: 25}
+    prizeMoneyDict[10] = {1: 60, 2: 40, 3: 25, 4: 15}
+    prizeMoneyDict[11] = {1: 60, 2: 45, 3: 30, 4: 20}
+    prizeMoneyDict[12] = {1: 65, 2: 45, 3: 35, 4: 25}
+    prizeMoneyDict[13] = {1: 65, 2: 45, 3: 35, 4: 25, 5: 15}
+    prizeMoneyDict[14] = {1: 70, 2: 50, 3: 35, 4: 25, 5: 20}
+    prizeMoneyDict[15] = {1: 70, 2: 55, 3: 40, 4: 30, 5: 20}
+    prizeMoneyDict[16] = {1: 75, 2: 55, 3: 45, 4: 35, 5: 20}
+    prizeMoneyDict[17] = {1: 80, 2: 60, 3: 50, 4: 35, 5: 20}
+    prizeMoneyDict[18] = {1: 80, 2: 60, 3: 55, 4: 40, 5: 25}
+    prizeMoneyDict[19] = {1: 80, 2: 60, 3: 55, 4: 40, 5: 25, 6: 15}
+    prizeMoneyDict[20] = {1: 85, 2: 65, 3: 55, 4: 40, 5: 25, 6: 20}
+    prizeMoneyDict[21] = {1: 90, 2: 70, 3: 55, 4: 40, 5: 30, 6: 20}
+    prizeMoneyDict[22] = {1: 90, 2: 70, 3: 55, 4: 40, 5: 30, 6: 20, 7: 15}
+    prizeMoneyDict[23] = {1: 95, 2: 75, 3: 60, 4: 40, 5: 30, 6: 20, 7: 15}
+    prizeMoneyDict[24] = {1: 95, 2: 75, 3: 60, 4: 40, 5: 30, 6: 20, 7: 20, 8: 10}
+
+
+    def get_prize_money_dictionary_for_num_players(self, players):
+        if players >=24:
+            players = 24
+
+        if players < 6:
+            return {"Not Enough Players": "Please Come Up With Your Own Game"}
+
+        return self.prizeMoneyDict[players]
 
     def __str__(self):
         return "Dogfight on {} | {}".format(self.course.name, self.date)

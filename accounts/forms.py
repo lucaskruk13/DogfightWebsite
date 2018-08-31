@@ -3,6 +3,10 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import Profile
 from django.core.validators import RegexValidator
+from string import Template
+from django.forms import ImageField
+from django.utils.safestring import mark_safe
+
 
 
 class SignUpForm(UserCreationForm):
@@ -34,3 +38,11 @@ class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ('handicap','bio')
+
+
+
+class ProfileImageForm(forms.ModelForm):
+    profile_image = forms.ImageField(label='')
+    class Meta:
+        model = Profile
+        fields = ['profile_image']

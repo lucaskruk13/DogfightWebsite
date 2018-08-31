@@ -1,16 +1,19 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, reverse
 from django.contrib.auth import login as auth_login
-from .forms import SignUpForm, ProfileForm
+from .forms import SignUpForm, ProfileForm, ProfileImageForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import UpdateView, DetailView
 from .models import Profile, Scores
+from django.conf import  settings
 
 
 @method_decorator(login_required, name='dispatch')
 class ProfileUpdateView(UpdateView):
+
+
 
     model = Profile
     #fields = ['handicap', 'bio']
@@ -33,11 +36,16 @@ class ProfileUpdateView(UpdateView):
         return super().form_valid(form)
 
 
-class ProfileView(DetailView):
+class ProfileView(UpdateView):
 
     model = Profile
     template_name = 'accounts/profile.html'
     pk_url_kwarg = "user_pk"
+    form_class = ProfileImageForm
+
+    def get_success_url(self):
+        return reverse('profile', kwargs={"user_pk": self.kwargs.get('user_pk')})
+
 
     def get_object(self, queryset=None):
         return get_object_or_404(Profile, pk=self.kwargs.get('user_pk'))
@@ -47,9 +55,11 @@ class ProfileView(DetailView):
 
         # Get additional Context
 
-        context['scores'] = Scores.objects.filter(user=self.kwargs.get('user_pk'))
+        context['scores'] = Scores.objects.filter(user=self.kwargs.get('user_pk')).order_by('created_at').reverse()
+        context['profile_image_path'] = settings.MEDIA_URL
 
         return context
+
 
 
 # @method_decorator(login_required, name='dispatch')
