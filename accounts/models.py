@@ -43,7 +43,7 @@ class Profile(models.Model):
         return float(self.handicap)
 
     def fullname(self):
-        return "{}, {}".format(self.user.last_name, self.user.first_name)
+        return "{} {}".format(self.user.first_name, self.user.last_name)
 
     def __str__(self):
         return "{} | {}, {}".format(self.user.username, self.user.last_name, self.user.first_name)
