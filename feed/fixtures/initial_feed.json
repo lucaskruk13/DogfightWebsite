@@ -1,0 +1,88 @@
+[
+{
+    "model": "feed.course",
+    "pk": 1,
+    "fields": {
+        "name": "The Oaks",
+        "description": null,
+        "location": "The Woodlands, Tx",
+        "par": 72,
+        "yardage": "7200",
+        "img": "img/the_oaks.jpg"
+    }
+},
+{
+    "model": "feed.course",
+    "pk": 2,
+    "fields": {
+        "name": "Panther Trail",
+        "description": null,
+        "location": "The Woodlands, Tx",
+        "par": 72,
+        "yardage": "7200",
+        "img": "img/panther.jpg"
+    }
+},
+{
+    "model": "feed.course",
+    "pk": 3,
+    "fields": {
+        "name": "Lake Windcrest",
+        "description": null,
+        "location": "Magnolia, Tx",
+        "par": 72,
+        "yardage": "7200",
+        "img": "img/lake_windcrest.jpg"
+    }
+},
+{
+    "model": "feed.dogfight",
+    "pk": 1,
+    "fields": {
+        "date": "2018-07-28",
+        "start_time": "07:30:00",
+        "number_of_groups": 5,
+        "course": 3
+    }
+},
+{
+    "model": "feed.dogfight",
+    "pk": 2,
+    "fields": {
+        "date": "2018-08-04",
+        "start_time": "07:30:00",
+        "number_of_groups": 5,
+        "course": 3
+    }
+},
+{
+    "model": "feed.dogfight",
+    "pk": 3,
+    "fields": {
+        "date": "2018-08-11",
+        "start_time": "07:30:00",
+        "number_of_groups": 5,
+        "course": 1
+    }
+},
+{
+    "model": "feed.dogfight",
+    "pk": 4,
+    "fields": {
+        "date": "2018-08-18",
+        "start_time": "07:30:00",
+        "number_of_groups": 5,
+        "course": 1
+    }
+},
+{
+    "model": "feed.dogfight",
+    "pk": 5,
+    "fields": {
+        "date": "2018-08-25",
+        "start_time": "07:30:00",
+        "number_of_groups": 5,
+        "course": 1
+    }
+}
+]

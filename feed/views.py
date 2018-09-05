@@ -24,7 +24,16 @@ class FeedView(TemplateView):
         context['dogfight'] = dogfight
         context['scores_list'] = scores
         context['signed_up'] = is_signed_up(self.request.user, dogfight)
-        context['prize_money_dict'] = dogfight.get_prize_money_dictionary_for_num_players(scores.count())
+
+        # If Nobody is signed up, the prize money dictionary cant populate based on scores. THe Model is capable of handeling the right amount of players, but we need to ensure we are not passing it a empty set
+        # TODO: Test Empty Prize Money Dictionary
+        # TODO: Test Less than 6 Prize Money Dictionary
+        # TODO: Test Full Prize Money Dictionary
+        if scores.count():
+            context['prize_money_dict'] = dogfight.get_prize_money_dictionary_for_num_players(scores.count())
+        else:
+            context['prize_money_dict'] = {"Not Enough Players": "No Players Currently Signed Up"}
+
 
         return context
 
@@ -87,7 +96,7 @@ def get_current_dogfight():
 
 # Yield successive n-sized
 # chunks from l.
-def create_groups(l, n):
+def chunk(l, n):
     # looping till length l
     for i in range(0, len(l), n):
         yield l[i:i + n]

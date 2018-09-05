@@ -1,0 +1,85 @@
+[
+{
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+    "password": "pbkdf2_sha256$120000$J0OZ3BWyiW0e$JE3NJhiMFeXrM4zA49PVV4NtucXfzSVokV+oSSbNC9A=",
+    "last_login": "2018-09-05T00:34:28.773Z",
+    "is_superuser": true,
+    "username": "lucaskruk13",
+    "first_name": "Lucas",
+    "last_name": "Kruk",
+    "email": "lucaskruk13@gmail.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2018-08-31T02:33:42Z",
+    "groups": [],
+    "user_permissions": []
+    }
+},
+{
+    "model": "feed.dogfight",
+    "pk": 1,
+    "fields": {
+        "date": "2018-07-28",
+        "start_time": "07:30:00",
+        "number_of_groups": 5,
+        "course": 3
+    }
+},
+{
+  "model": "accounts.scores",
+  "pk": 1,
+  "fields": {
+    "user": 1,
+    "dogfight": 1,
+    "score": 35,
+    "created_at": "2017-06-25",
+    "countable": true
+  }
+},
+{
+  "model": "accounts.scores",
+  "pk": 2,
+  "fields": {
+    "user": 1,
+    "dogfight": 1,
+    "score": 35,
+    "created_at": "2017-06-25",
+    "countable": true
+  }
+},
+{
+  "model": "accounts.scores",
+  "pk": 3,
+  "fields": {
+    "user": 1,
+    "dogfight": 1,
+    "score": 35,
+    "created_at": "2017-06-25",
+    "countable": true
+  }
+},
+{
+  "model": "accounts.scores",
+  "pk": 4,
+  "fields": {
+    "user": 1,
+    "dogfight": 1,
+    "score": 35,
+    "created_at": "2017-06-25",
+    "countable": true
+  }
+},
+{
+  "model": "accounts.scores",
+  "pk": 5,
+  "fields": {
+    "user": 1,
+    "dogfight": 1,
+    "score": 35,
+    "created_at": "2017-06-25",
+    "countable": true
+  }
+}
+]

@@ -13,9 +13,12 @@
 
     <link rel="stylesheet" href="{% static 'css/base.css' %}" type="text/css">
 
-    {% block stylesheet %}
+    {% block base_stylesheet %}
         <link rel="stylesheet" href="{% static 'css/base-no-parallax.css' %}" type="text/css">
-    {% endblock stylesheet %}
+    {% endblock base_stylesheet %}
+
+    {% block additional_stylesheets %}
+    {% endblock additional_stylesheets %}
 </head>
 <body>
 {% block body %}

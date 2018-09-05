@@ -1,0 +1,38 @@
+[
+{
+    "model": "feed.course",
+    "pk": 1,
+    "fields": {
+        "name": "The Oaks",
+        "description": null,
+        "location": "The Woodlands, Tx",
+        "par": 72,
+        "yardage": "7200",
+        "img": "img/the_oaks.jpg"
+    }
+},
+{
+    "model": "feed.course",
+    "pk": 2,
+    "fields": {
+        "name": "Panther Trail",
+        "description": null,
+        "location": "The Woodlands, Tx",
+        "par": 72,
+        "yardage": "7200",
+        "img": "img/panther.jpg"
+    }
+},
+{
+    "model": "feed.course",
+    "pk": 3,
+    "fields": {
+        "name": "Lake Windcrest",
+        "description": null,
+        "location": "Magnolia, Tx",
+        "par": 72,
+        "yardage": "7200",
+        "img": "img/lake_windcrest.jpg"
+    }
+}
+]

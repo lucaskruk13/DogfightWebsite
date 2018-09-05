@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404, reverse
 from django.contrib.auth import login as auth_login
-from .forms import SignUpForm, ProfileForm, ProfileImageForm
+from .forms import SignUpForm, ProfileForm
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+#from django.contrib.auth.models import User
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import UpdateView, DetailView
@@ -10,17 +10,16 @@ from .models import Profile, Scores
 from django.conf import  settings
 
 
+
+
 @method_decorator(login_required, name='dispatch')
 class ProfileUpdateView(UpdateView):
 
-
-
     model = Profile
-    #fields = ['handicap', 'bio']
-    template_name = 'accounts/my_account.html'
-    success_url = reverse_lazy('feed')
-    form_class = ProfileForm()
 
+    template_name = 'accounts/my_account.html'
+    form_class = ProfileForm
+    success_url = reverse_lazy('feed')
 
 
     def get_object(self, queryset=None):
@@ -35,16 +34,16 @@ class ProfileUpdateView(UpdateView):
         profile.save()
         return super().form_valid(form)
 
+    # def get_success_url(self, **kwargs):
+    #     if kwargs != None:
+    #         return reverse_lazy('profile', kwargs = {'user_pk': self.request.user.id})
 
-class ProfileView(UpdateView):
+
+class ProfileView(DetailView):
 
     model = Profile
     template_name = 'accounts/profile.html'
     pk_url_kwarg = "user_pk"
-    form_class = ProfileImageForm
-
-    def get_success_url(self):
-        return reverse('profile', kwargs={"user_pk": self.kwargs.get('user_pk')})
 
 
     def get_object(self, queryset=None):

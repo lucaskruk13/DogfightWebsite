@@ -26,7 +26,7 @@ class FeedTest(TestCase):
 
 class AuthenticatedFeedTest(FeedTest):
 
-    fixtures = ['course_fixture']
+    fixtures = ['course_fixture', 'initial_Dogfight']
 
     @classmethod
     def setUpClass(cls):
@@ -39,7 +39,15 @@ class AuthenticatedFeedTest(FeedTest):
         cls.user = User.objects.create(first_name='John', last_name='Appleseed', email='john@appleseed.com',
                                        username=cls.username)
         cls.user.set_password(cls.password)
+
         cls.user.save()
+
+        profile = cls.user.profile
+        profile.handicap = "5"
+        profile.bio = "Its Me"
+        profile.initial = False
+        profile.save()
+
 
         # Create a Dogfight
         cls.dogfight = Dogfight.objects.create(course=Course.objects.first())
@@ -79,7 +87,7 @@ class TestDogfightNotSetup(FeedTest):
 
 class TestWithDogfightSetup(FeedTest):
 
-    fixtures = ['initial_data', 'course_fixture']
+    fixtures = ['initial_data','course_fixture']
 
     @classmethod
     def setUpTestData(cls):

@@ -1,0 +1,12 @@
+[
+{
+    "model": "feed.dogfight",
+    "pk": 1,
+    "fields": {
+        "date": "2018-07-28",
+        "start_time": "07:30:00",
+        "number_of_groups": 5,
+        "course": 3
+    }
+}
+]

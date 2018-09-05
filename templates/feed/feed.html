@@ -6,13 +6,13 @@
     Dogfight | Feed
 {% endblock title %}
 
-{% block stylesheet %}
+{% block base_stylesheet %}
     {% if dogfight.course.img %}
         <link rel="stylesheet" href="{% static 'css/base-parallax.css' %}" type="text/css">
     {% else %}
         <link rel="stylesheet" href="{% static 'css/base-no-parallax.css' %}" type="text/css">
     {% endif %}
-{% endblock stylesheet%}
+{% endblock base_stylesheet%}
 
 {% block content %}
 
@@ -66,7 +66,7 @@
 
                                 <tr>
                                     {% for key, value in prize_money_dict.items %}
-                                        <td>${{ value }}</td>
+                                        <td>{% if prize_money_dict|length > 1 %}${% endif %}{{ value }}</td>
                                     {% endfor %}
                                 </tr>
                         </table>

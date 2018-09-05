@@ -9,6 +9,8 @@ from django.utils.safestring import mark_safe
 
 
 
+
+
 class SignUpForm(UserCreationForm):
     email = forms.CharField(max_length=254, required=True, widget=forms.EmailInput())
     first_name = forms.CharField(max_length=30, required=True)
@@ -35,14 +37,13 @@ class ProfileForm(forms.ModelForm):
         help_text='Max Length: 4000'
     )
 
+    # TODO: Edit Profile Tests
+    # TODO: Fix Signup Not Creating Scores - Add check when signing to see if scores/handicap has been created successfully.
+
+
     class Meta:
         model = Profile
         fields = ('handicap','bio')
 
 
 
-class ProfileImageForm(forms.ModelForm):
-    profile_image = forms.ImageField(label='')
-    class Meta:
-        model = Profile
-        fields = ['profile_image']

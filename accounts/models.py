@@ -83,7 +83,8 @@ def on_profile_save(sender, instance, **kwargs):
             score = Scores()
             score.user = instance.user # Instance is of class Profile
             score.score = generateInitialQuota(instance.handicap)
-            score.course = Course.objects.first()
+            score.dogfight = Dogfight.objects.first()
+            score.countable = True
             score.save()
 
 post_save.connect(on_profile_save, sender=Profile) # Links Scores saving function to the function on_profile_save
