@@ -24,6 +24,7 @@ class FeedView(TemplateView):
         context['dogfight'] = dogfight
         context['scores_list'] = scores
         context['signed_up'] = is_signed_up(self.request.user, dogfight)
+        context['waiting_list'] =get_waiting_list()
 
         # If Nobody is signed up, the prize money dictionary cant populate based on scores. THe Model is capable of handeling the right amount of players, but we need to ensure we are not passing it a empty set
         # TODO: Test Empty Prize Money Dictionary
@@ -85,7 +86,11 @@ def is_signed_up(user, dogfight):
 
 def get_scores_list():
     dogfight = get_current_dogfight()
-    return Scores.objects.filter(dogfight=dogfight).order_by('user__last_name')
+    return Scores.objects.filter(dogfight=dogfight).order_by('created_at')[:(dogfight.number_of_groups*4)]
+
+def get_waiting_list():
+    dogfight= get_current_dogfight()
+    return Scores.objects.filter(dogfight=dogfight).order_by('created_at')[(dogfight.number_of_groups*4):]
 
 
 def get_current_dogfight():
@@ -93,10 +98,3 @@ def get_current_dogfight():
     dogfight = Dogfight.objects.filter(date__gte=timezone.now()).order_by('date').first() # Gets the upcoming dogfight, even if there are dogfights scheduled for a later date
     return dogfight
 
-
-# Yield successive n-sized
-# chunks from l.
-def chunk(l, n):
-    # looping till length l
-    for i in range(0, len(l), n):
-        yield l[i:i + n]

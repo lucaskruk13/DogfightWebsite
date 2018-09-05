@@ -6,8 +6,10 @@ from django.db.models import Avg
 from django.core.validators import RegexValidator
 from feed.models import Course, Dogfight
 from datetime import datetime
+from django.utils.timezone import utc
 import re
 
+now = datetime.utcnow().replace(tzinfo=utc)
 
 def user_directory_path(instance, filename):
     # File will be uploaded to MEDIA_ROOT/user_<id>/<filename>
@@ -56,7 +58,7 @@ class Scores(models.Model):
     user = models.ForeignKey(User, related_name='scores', on_delete=models.CASCADE) # Every Score has a profile
     dogfight = models.ForeignKey(Dogfight, related_name='scores_dogfight', on_delete=models.CASCADE, default=1) # Every Score has a course
     score = models.IntegerField(default=0, null=False, blank=False)
-    created_at = models.DateField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     countable = models.BooleanField(default=False) # Whenever we sign up it will create a new default score, but we cannot count that in the quota
 
 

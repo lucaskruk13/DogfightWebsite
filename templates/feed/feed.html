@@ -2,6 +2,7 @@
 {% load static %}
 {% load humanize %}
 
+
 {% block title %}
     Dogfight | Feed
 {% endblock title %}
@@ -55,7 +56,7 @@
             {% if prize_money_dict %}
 
                 <div class="card">
-                    <div class="card-header">Prize Money</div>
+                    <div class="card-header text-center"><strong>Prize Money</strong></div>
                     <div class="card-body">
                         <table class="table text-center" align="center">
                             <thead>
@@ -86,6 +87,7 @@
                                 <th scope="col">Golfer</th>
                                 <th scope="col">Quota</th>
                                 <th scope="col">Precise Quota</th>
+                                <th scope="col">Sign Up Time</th>
                             </thead>
 
                             <tbody>
@@ -96,6 +98,38 @@
                                         <td><a href="{% url 'profile' score.user.pk %}">{{ score.user.profile.fullname }}</a></td>
                                         <td>{{ score.user.profile.getRoundedQuota }}</td>
                                         <td>{{ score.user.profile.getCurrentQuota }}</td>
+                                        <td>{{ score.created_at }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if waiting_list %}
+                <div class="card" id="feed-table-container">
+                    <div class="card-header text-center">
+                        <strong>Waiting List</strong>
+                    </div>
+                    <div class="card-body">
+                        <table class="table text-center table-striped table-borderless" id="feed-table">
+                            <thead>
+                                <th scope="col">Golfer</th>
+                                <th scope="col">Quota</th>
+                                <th scope="col">Precise Quota</th>
+
+                            </thead>
+
+                            <tbody>
+                            {# Wrap the TR in a link to the user  #}
+                                {% for score in waiting_list %}
+                                    <tr {% if user == score.user %} style="background-color: yellow;" {% endif %}>
+
+                                        <td><a href="{% url 'profile' score.user.pk %}">{{ score.user.profile.fullname }}</a></td>
+                                        <td>{{ score.user.profile.getRoundedQuota }}</td>
+                                        <td>{{ score.user.profile.getCurrentQuota }}</td>
+
                                     </tr>
                                 {% endfor %}
                             </tbody>
