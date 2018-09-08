@@ -20,14 +20,9 @@ class FeedView(TemplateView):
         context['dogfight'] = dogfight
         context['scores_list'] = scores
         context['signed_up'] = is_signed_up(self.request.user, dogfight)
-        # TODO: Test Waiting List (Empty, Populated)
         context['waiting_list'] =get_waiting_list()
 
         # If Nobody is signed up, the prize money dictionary cant populate based on scores. THe Model is capable of handeling the right amount of players, but we need to ensure we are not passing it a empty set
-        # TODO: Test Empty Prize Money Dictionary
-        # TODO: Test Less than 6 Prize Money Dictionary
-        # TODO: Test Full Prize Money Dictionary
-        # TODO: Test Prize Money Based on signed up & waiting list
         if scores is not None and scores.count():
             context['prize_money_dict'] = dogfight.get_prize_money_dictionary_for_num_players(scores.count())
         else:

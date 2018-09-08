@@ -55,7 +55,7 @@
 
             {% if prize_money_dict %}
 
-                <div class="card">
+                <div class="card" id="prize-money-card">
                     <div class="card-header text-center"><strong>Prize Money</strong></div>
                     <div class="card-body">
                         <table class="table text-center" align="center">
@@ -65,7 +65,7 @@
                                 {% endfor %}
                             </thead>
 
-                                <tr>
+                                <tr class="{% if prize_money_dict|length > 1 %}prize-money-availible{% else %}prize-money-unavailible{% endif %}">
                                     {% for key, value in prize_money_dict.items %}
                                         <td>{% if prize_money_dict|length > 1 %}${% endif %}{{ value }}</td>
                                     {% endfor %}

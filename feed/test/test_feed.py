@@ -99,20 +99,27 @@ class TestWithDogfightSetup(FeedTest):
     def test_feed_status_code(self):
         self.assertEquals(self.feedResponse.status_code, 200)
 
-        # Test Dogfight's exists
-        dogfight = Dogfight.objects.first()
-        score = Scores.objects.first()
-
-
     def test_dogfight_present(self):
+
         # If a dogfight is available, then the parallax window will show
         self.assertContains(self.feedResponse, 'class="parallax-window"')
         self.assertContains(self.feedResponse, 'feed-table') # referencing the Table ID
+
+    def test_prize_money_table_exits(self):
+        self.assertContains(self.feedResponse, 'prize-money-card')
+
+    def test_prize_money_number_of_places(self):
+        # The Initial Data only contains 5 places, so the size should be 1, which returns a class of prize-money-unavailible
+        self.assertContains(self.feedResponse, 'prize-money-unavailible')
+
 
 class TestNoSignups(FeedTest):
 
     def test_no_signup_table_present(self):
         self.assertNotContains(self.feedResponse, 'feed-table-container')
+
+    def test_no_waiting_list_table_present(self):
+        self.assertNotContains(self.feedResponse, 'waiting-list-table-card')
 
 class TestMultipleDogfightsUpcoming(FeedTest):
 
@@ -215,9 +222,16 @@ class TestWaitingListTableExists(FeedTest):
 
         # Create Users & scores for this dogfight
 
-        for i in range(1, 20):
+        for i in range(0, 20):
             user = User.objects.create(username="test{}".format(i))
             Scores.objects.create(dogfight=cls.dogfight, user=user, score=30)
 
-    def testWaitingListIsPresent(self):
+    def test_waiting_list_is_present(self):
         self.assertContains(self.feedResponse, "waiting-list-table-card")
+
+    def test_waiting_list_contains_four_rows(self):
+        self.assertContains(self.feedResponse, 'waiting-list-row', 4)
+
+    def test_prize_money_availible(self):
+        # if the prize money is present, it should return a table row class of prize-money-availible
+        self.assertContains(self.feedResponse, 'prize-money-availible')
