@@ -6,10 +6,8 @@ from django.db.models import Avg
 from django.core.validators import RegexValidator
 from feed.models import Course, Dogfight
 from datetime import datetime
-from django.utils.timezone import utc
 import re
 
-now = datetime.utcnow().replace(tzinfo=utc)
 
 def user_directory_path(instance, filename):
     # File will be uploaded to MEDIA_ROOT/user_<id>/<filename>
@@ -51,7 +49,13 @@ class Profile(models.Model):
         return "{} | {}, {}".format(self.user.username, self.user.last_name, self.user.first_name)
 
     def getRoundedQuota(self):
+        quota = self.getCurrentQuota()
+
+        if quota is None:
+            return None
         return round(self.getCurrentQuota())
+
+
 
 
 class Scores(models.Model):

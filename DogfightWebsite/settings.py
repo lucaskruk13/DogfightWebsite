@@ -43,6 +43,9 @@ INSTALLED_APPS = [
     'feed',
     'widget_tweaks',
     'django.contrib.humanize',
+    'crispy_forms',
+
+
 ]
 
 MIDDLEWARE = [
@@ -151,3 +154,5 @@ MESSAGE_TAGS = {
     messages.WARNING: 'alert-warning',
     messages.ERROR: 'alert-danger',
 }
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'

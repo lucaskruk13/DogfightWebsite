@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.urls import reverse, resolve
 from feed.models import Course, Dogfight
 from accounts.models import Profile, Scores
-from datetime import timezone
+
 from django.utils import timezone
 from django.contrib.auth.models import User
 
@@ -22,7 +22,6 @@ class FeedTest(TestCase):
     def setUp(self):
         self.feedResponse = self.client.get(self.url)
         self.feedView = resolve('/')
-
 
 class AuthenticatedFeedTest(FeedTest):
 
@@ -110,13 +109,10 @@ class TestWithDogfightSetup(FeedTest):
         self.assertContains(self.feedResponse, 'class="parallax-window"')
         self.assertContains(self.feedResponse, 'feed-table') # referencing the Table ID
 
-
-
 class TestNoSignups(FeedTest):
 
     def test_no_signup_table_present(self):
         self.assertNotContains(self.feedResponse, 'feed-table-container')
-
 
 class TestMultipleDogfightsUpcoming(FeedTest):
 
@@ -141,6 +137,7 @@ class TestMultipleDogfightsUpcoming(FeedTest):
         self.assertTrue(currentDogfight.course, Course.objects.first())
 
 class TestFeedPageNoUserLoggedIn(FeedTest):
+
 
     @classmethod
     def setUpTestData(cls):
@@ -207,3 +204,20 @@ class TestFeedPageUserAlreadySignedUp(AuthenticatedFeedTest):
 
     def test_score_was_destroyed(self):
         self.assertFalse(Scores.objects.filter(dogfight=self.dogfight, user=self.user).exists())
+
+class TestWaitingListTableExists(FeedTest):
+
+    @classmethod
+    def setUpTestData(cls):
+
+        # Create a dogfight with 4 groups
+        cls.dogfight = Dogfight.objects.create(course=Course.objects.first(), number_of_groups=4)
+
+        # Create Users & scores for this dogfight
+
+        for i in range(1, 20):
+            user = User.objects.create(username="test{}".format(i))
+            Scores.objects.create(dogfight=cls.dogfight, user=user, score=30)
+
+    def testWaitingListIsPresent(self):
+        self.assertContains(self.feedResponse, "waiting-list-table-card")

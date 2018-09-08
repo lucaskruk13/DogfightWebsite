@@ -33,6 +33,7 @@ urlpatterns = [
 
     # Profile
     path('profile/<int:user_pk>/', account_views.ProfileView.as_view(template_name='accounts/profile.html'), name='profile'),
+    path('profile/<int:user_pk>/edit/', account_views.ProfileUpdateView.as_view(template_name='accounts/edit_profile.html'), name='edit_profile'),
 
     # Admin Urls
     path('admin/', admin.site.urls),

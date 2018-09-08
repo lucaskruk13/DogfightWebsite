@@ -93,7 +93,7 @@
                             <tbody>
                             {# Wrap the TR in a link to the user  #}
                                 {% for score in scores_list %}
-                                    <tr {% if user == score.user %} style="background-color: yellow;" {% endif %}>
+                                    <tr {% if user == score.user %} style="background-color: yellow;" {% endif %} id="signed-up-row">
 
                                         <td><a href="{% url 'profile' score.user.pk %}">{{ score.user.profile.fullname }}</a></td>
                                         <td>{{ score.user.profile.getRoundedQuota }}</td>
@@ -108,7 +108,7 @@
             {% endif %}
 
             {% if waiting_list %}
-                <div class="card" id="feed-table-container">
+                <div class="card" id="waiting-list-table-card">
                     <div class="card-header text-center">
                         <strong>Waiting List</strong>
                     </div>
@@ -124,7 +124,7 @@
                             <tbody>
                             {# Wrap the TR in a link to the user  #}
                                 {% for score in waiting_list %}
-                                    <tr {% if user == score.user %} style="background-color: yellow;" {% endif %}>
+                                    <tr {% if user == score.user %} style="background-color: yellow;" {% endif %} id="waiting-list-row">
 
                                         <td><a href="{% url 'profile' score.user.pk %}">{{ score.user.profile.fullname }}</a></td>
                                         <td>{{ score.user.profile.getRoundedQuota }}</td>

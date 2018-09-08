@@ -2,16 +2,12 @@ from django.shortcuts import redirect
 from django.views.generic import TemplateView, DetailView
 from accounts.models import Scores
 from feed.models import Course, Dogfight
-from django.utils import timezone
+from datetime import datetime
 
 from django.contrib import messages
 
-
-# TODO: Include Watiting List Table
-
 class FeedView(TemplateView):
     template_name = 'feed/feed.html'
-
 
     def get_context_data(self, **kwargs):
         # Call the base implementation to get a context
@@ -24,13 +20,15 @@ class FeedView(TemplateView):
         context['dogfight'] = dogfight
         context['scores_list'] = scores
         context['signed_up'] = is_signed_up(self.request.user, dogfight)
+        # TODO: Test Waiting List (Empty, Populated)
         context['waiting_list'] =get_waiting_list()
 
         # If Nobody is signed up, the prize money dictionary cant populate based on scores. THe Model is capable of handeling the right amount of players, but we need to ensure we are not passing it a empty set
         # TODO: Test Empty Prize Money Dictionary
         # TODO: Test Less than 6 Prize Money Dictionary
         # TODO: Test Full Prize Money Dictionary
-        if scores.count():
+        # TODO: Test Prize Money Based on signed up & waiting list
+        if scores is not None and scores.count():
             context['prize_money_dict'] = dogfight.get_prize_money_dictionary_for_num_players(scores.count())
         else:
             context['prize_money_dict'] = {"Not Enough Players": "No Players Currently Signed Up"}
@@ -38,12 +36,10 @@ class FeedView(TemplateView):
 
         return context
 
-
 class CourseView(DetailView):
     model = Course
     context_object_name = 'course'
     template_name = 'feed/course.html'
-
 
 # Creating a url to sign up the golfer
 def dogfight_signup(request, dogfight_pk, user_pk):
@@ -86,15 +82,35 @@ def is_signed_up(user, dogfight):
 
 def get_scores_list():
     dogfight = get_current_dogfight()
-    return Scores.objects.filter(dogfight=dogfight).order_by('created_at')[:(dogfight.number_of_groups*4)]
+
+    # If there is no dogfight, there is no need to retrieve the Scores
+    if dogfight is None:
+        return None
+
+    scores = Scores.objects.filter(dogfight=dogfight).order_by('created_at')
+
+    if dogfight.number_of_groups is None:
+        return scores
+    else:
+        return scores[:(dogfight.number_of_groups*4)]
 
 def get_waiting_list():
     dogfight= get_current_dogfight()
-    return Scores.objects.filter(dogfight=dogfight).order_by('created_at')[(dogfight.number_of_groups*4):]
+
+    # If there is no dogfight, there is no need to retrieve the Scores
+    if dogfight is None:
+        return None
+
+    scores= Scores.objects.filter(dogfight=dogfight).order_by('created_at')
+
+    if dogfight.number_of_groups is None:
+        return None
+    else:
+       return scores[(dogfight.number_of_groups*4):]
 
 
 def get_current_dogfight():
 
-    dogfight = Dogfight.objects.filter(date__gte=timezone.now()).order_by('date').first() # Gets the upcoming dogfight, even if there are dogfights scheduled for a later date
+    dogfight = Dogfight.objects.filter(date__gte=datetime.now()).order_by('date').first() # Gets the upcoming dogfight, even if there are dogfights scheduled for a later date
     return dogfight
 
