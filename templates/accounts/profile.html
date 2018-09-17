@@ -1,7 +1,7 @@
 {% extends 'common/base.html' %}
 {% load static %}
 
-{# TODO: Create Profile View #}
+{# TODO: Create Profile Edit View #}
 {% block content %}
 
     <div class="container text-center col-lg-8 col-md-8 col-sm-8">
@@ -40,7 +40,6 @@
                     {% for score in scores %}
                         {% if score.countable %}
                         <tr>
-                            {# TODO: Maybe set the dogfight course to be Null for scores that were there before the website existed #}
                             <td>{{ score.score }}</td>
                             <td>{{ score.dogfight}}</td>
                         </tr>

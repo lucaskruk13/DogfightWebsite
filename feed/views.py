@@ -3,6 +3,7 @@ from django.views.generic import TemplateView, DetailView
 from accounts.models import Scores
 from feed.models import Course, Dogfight
 from datetime import datetime
+from django.contrib.auth.models import User
 
 from django.contrib import messages
 
@@ -27,6 +28,8 @@ class FeedView(TemplateView):
             context['prize_money_dict'] = dogfight.get_prize_money_dictionary_for_num_players(scores.count())
         else:
             context['prize_money_dict'] = {"Not Enough Players": "No Players Currently Signed Up"}
+
+        context['golfer_list'] = User.objects.all()
 
 
         return context
