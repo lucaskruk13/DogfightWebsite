@@ -82,4 +82,4 @@ def signup(request):
             return redirect('my_account')
     else:
         form = SignUpForm()
-    return render(request, 'Accounts/auth/signup.html', {'form': form})
+    return render(request, 'accounts/auth/signup.html', {'form': form})
